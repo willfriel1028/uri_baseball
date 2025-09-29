@@ -67,8 +67,8 @@ col1, col2, col3 = st.columns([1,2,1])
 with col2:
     options = st.selectbox("Pitchers", options=choices)
 
-col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])
-with col3:
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
     st.header(options)
     
 if options == "TOTAL":

@@ -6,6 +6,8 @@ import streamlit as st
 
 df = pd.read_csv("data/Fall25Scrim(updated).csv")
 
+df["Pitcher"] = df["Pitcher"].replace("Grotyohann, Connor ", "Grotyohann, Connor")
+
 def uri_pitchers_report(df):
     
     names = list(df["Pitcher"].unique())

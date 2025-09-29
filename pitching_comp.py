@@ -6,6 +6,8 @@ import streamlit as st
 
 df = pd.read_csv("data/Fall25Scrim(updated).csv")
 
+df["Pitcher"] = df["Pitcher"].replace("Grotyohann, Connor ", "Grotyohann, Connor")
+
 def uri_pitchers_report(df):
     
     names = list(df["Pitcher"].unique())
@@ -131,10 +133,10 @@ dfp = uri_pitchers_report(df_uri)
 
 dfps = dfp.sort_values("Pitcher", ascending=True)
 
-def highlight_domscore(val):
-    return "background-color: lightblue"  # or "color: red" for text
+#def highlight_domscore(val):
+    #return "background-color: lightblue"  # or "color: red" for text
 
-styled = dfps.style.applymap(highlight_domscore, subset=["DominantScore"])
+#styled = dfps.style.applymap(highlight_domscore, subset=["DominantScore"])
 
-st.dataframe(styled, hide_index=True, height=800)
+st.dataframe(dfps, hide_index=True, height=800)
 st.set_page_config(layout="wide")
