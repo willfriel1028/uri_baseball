@@ -63,8 +63,8 @@ names = list(df_sorted["Pitcher"].unique())
 
 choices = total + names
 
-col1, col2, col3 = st.columns([1,3,1])
-with col2:
+col1, col2, col3 = st.columns([1,1,1])
+with col1:
     options = st.selectbox("Pitcher", options=choices)
     
 if options != "TOTAL":
@@ -79,12 +79,12 @@ else:
     choices = all1 + pitches    
     
 col1, col2, col3 = st.columns([1,1,1])
-with col2:    
+with col1:    
     pitch = st.selectbox("Pitch", options=choices)
     
-col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])
-with col3:
-    st.header(options)
+#col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])
+#with col3:
+st.header(options)
     
 if options == "TOTAL":
     if pitch == "ALL":
