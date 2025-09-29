@@ -60,7 +60,7 @@ def batters_stats_report(df, pitches):
     dfx["TB"] = dfx["1B"] + (2 * dfx["2B"]) + (3 * dfx["3B"]) + (4 * dfx["HR"])
     dfx["SLG"] = round(dfx["TB"] / dfx["AB"], 3)
     dfx["OPS"] = dfx["OBP"] + dfx["SLG"]
-    dfx["XBH"] = dfx["1B"] + dfx["2B"] + dfx["3B"] + dfx["HR"]
+    dfx["XBH"] = dfx["2B"] + dfx["3B"] + dfx["HR"]
     dfx["K"] = len(df[df["KorBB"] == "Strikeout"])
     rbi_eligible = df[
         (
