@@ -63,7 +63,7 @@ names = list(df_sorted["Pitcher"].unique())
 
 choices = total + names
 
-col1, col2, col3 = st.columns([1,1,1])
+col1, col2, col3 = st.columns([1,3,1])
 with col2:
     options = st.selectbox("Pitchers", options=choices)
 
