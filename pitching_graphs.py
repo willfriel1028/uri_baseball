@@ -65,16 +65,37 @@ choices = total + names
 
 col1, col2, col3 = st.columns([1,3,1])
 with col2:
-    options = st.selectbox("Pitchers", options=choices)
-
+    options = st.selectbox("Pitcher", options=choices)
+    
+if options != "TOTAL":
+    dfp = df[df["Pitcher"] == options]
+    all1 = ["ALL"]
+    pitches = list(dfp["TaggedPitchType"].unique())
+    choices = all1 + pitches
+    
+else:
+    all1 = ["ALL"]
+    pitches = list(df["TaggedPitchType"].unique())
+    choices = all1 + pitches    
+    
+col1, col2, col3 = st.columns([1,1,1])
+with col2:    
+    pitch = st.selectbox("Pitch", options=choices)
+    
 col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])
 with col3:
     st.header(options)
     
 if options == "TOTAL":
-    new_df = df
+    if pitch == "ALL":
+        new_df = df
+    else:
+        new_df = df[df["TaggedPitchType"] == pitch]
 else:
-    new_df = df[df["Pitcher"] == options]
+    if pitch == "ALL":
+        new_df = df[df["Pitcher"] == options]
+    else:
+        new_df = df[(df["Pitcher"] == options) & (df["TaggedPitchType"] == pitch)]
         
 print_graphs(new_df, PITCH_ORDER)
 
