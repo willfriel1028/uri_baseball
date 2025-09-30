@@ -138,5 +138,5 @@ dfps = dfp.sort_values("Pitcher", ascending=True)
 
 #styled = dfps.style.applymap(highlight_domscore, subset=["DominantScore"])
 
-st.dataframe(dfps, hide_index=True, height=800)
+st.dataframe(dfps, hide_index=True, height=800, use_container_width=True)
 st.set_page_config(layout="wide")
