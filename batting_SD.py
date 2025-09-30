@@ -22,10 +22,10 @@ def uri_batters_report(df):
         
     final_df = pd.DataFrame(dfs).reset_index(drop=True)
     
-    final_df = move_column(final_df, "TotalScore", 2)
-    final_df = move_column(final_df, "Correct%", 3)
-    final_df = move_column(final_df, "Swing%vsStrike", 4)
-    final_df = move_column(final_df, "Hold%vsBall", 5)
+    final_df = move_column(final_df, "TotalScore", 4)
+    final_df = move_column(final_df, "Correct%", 5)
+    final_df = move_column(final_df, "Swing%vsStrike", 6)
+    final_df = move_column(final_df, "Hold%vsBall", 7)
     final_df = final_df.drop("Pitches", axis=1)
         
     #final_df.to_csv(csv + "_batters_report.csv")
@@ -46,6 +46,8 @@ def batters_stats_report(df, pitches):
     df_balls = df[~strikes]
     
     dfx["Player"] = df["Batter"].iloc[0]
+    dfx["PA"] = len(df[(df["PitchCall"] == "HitByPitch") | (df["KorBB"] == "Strikeout") | (df["KorBB"] == "Walk") | (df["PitchCall"] == "InPlay")])
+    dfx["AB"] = len(df[(df["PitchCall"] == "InPlay") | (df["KorBB"] == "Strikeout")])
     dfx["Pitches"] = len(df) - len(df[df["PitchCall"] == "HitByPitch"])
     dfx["SwingAtStrike"] = len(df_strikes[(df_strikes["PitchCall"] == "InPlay") | (df_strikes["PitchCall"] == "FoulBallNotFieldable") | (df_strikes["PitchCall"] == "StrikeSwinging")])
     dfx["StrikeTaken"] = len(df_strikes[(df_strikes["PitchCall"] == "StrikeCalled")])
