@@ -86,5 +86,9 @@ dfb = uri_batters_report(df_uri)
 
 dfbs = dfb.sort_values("Player", ascending=True)
 
+col1, col2, col3 = st.columns([2,1,2])
+with col2:
+    st.header("Batting Statistics")
+
 st.dataframe(dfbs, hide_index=True, height=800)
 st.set_page_config(layout="wide")

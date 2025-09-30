@@ -63,5 +63,9 @@ dfp = uri_pitchers_report(df_uri)
 
 dfps = dfp.sort_values("Pitcher", ascending=True)
 
+col1, col2, col3 = st.columns([2,1,2])
+with col2:
+    st.header("Pitching Statistics")
+
 st.dataframe(dfps, hide_index=True, height=800)
 st.set_page_config(layout="wide")
