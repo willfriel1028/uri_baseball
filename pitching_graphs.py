@@ -144,7 +144,7 @@ col1, col2, col3 = st.columns([1,1,1])
 with col1:
     options = st.selectbox("Pitcher", options=choices)
     
-not_valid = ["ALL", "All LHP", "All RHP"]
+not_valid = ["TOTAL", "All LHP", "All RHP"]
     
 if  options not in not_valid:
     dfp = df[df["Pitcher"] == options]
