@@ -163,18 +163,28 @@ col1, col2, col3 = st.columns([1, 1, 1])
 with col1:
     st.header(options)
     
-if options == "TOTAL":
-    if pitch == "ALL":
-        new_df = df
-    else:
-        new_df = df[df["TaggedPitchType"] == pitch]
-else:
-    if pitch == "ALL":
-        new_df = df[df["Pitcher"] == options]
-    else:
-        new_df = df[(df["Pitcher"] == options) & (df["TaggedPitchType"] == pitch)]
+#if options == "TOTAL":
+    #if pitch == "ALL":
+        #new_df = df
+    #else:
+        #new_df = df[df["TaggedPitchType"] == pitch]
+#else:
+    #if pitch == "ALL":
+        #new_df = df[df["Pitcher"] == options]
+    #else:
+        #new_df = df[(df["Pitcher"] == options) & (df["TaggedPitchType"] == pitch)]
         
-print_graphs(new_df, PITCH_ORDER, OUTCOME_ORDER)
+if options == "TOTAL":
+    new_df0 = df
+else:
+    new_df0 = df[df["Pitcher"] == options]
+    
+if pitch == "ALL":
+    new_df1 = new_df0
+else:
+    new_df1 = new_df0[new_df0["TaggedPitchType"] == pitch]
+        
+print_graphs(new_df1, PITCH_ORDER, OUTCOME_ORDER)
 
         
         
