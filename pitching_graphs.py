@@ -135,7 +135,7 @@ df = get_outcome(df)
 OUTCOME_ORDER = list(df["Outcome"].unique())
 
 df_sorted = df.sort_values("Pitcher")
-total = ["TOTAL"]
+total = ["TOTAL", "All LHP", "All RHP"]
 names = list(df_sorted["Pitcher"].unique())
 
 choices = total + names
@@ -144,7 +144,9 @@ col1, col2, col3 = st.columns([1,1,1])
 with col1:
     options = st.selectbox("Pitcher", options=choices)
     
-if options != "TOTAL":
+not_valid = ["ALL", "All LHP", "All RHP"]
+    
+if  options not in not_valid:
     dfp = df[df["Pitcher"] == options]
     all1 = ["ALL"]
     pitches = list(dfp["TaggedPitchType"].unique())
@@ -158,6 +160,12 @@ else:
 col1, col2, col3 = st.columns([1,1,1])
 with col1:    
     pitch = st.selectbox("Pitch", options=choices)
+    
+choices = ["ALL", "Right", "Left"]
+    
+col1, col2, col3 = st.columns([1,1,1])
+with col1:
+    side = st.selectbox("Batter Side", options=choices)
     
 col1, col2, col3 = st.columns([1, 1, 1])
 with col1:
@@ -176,6 +184,10 @@ with col1:
         
 if options == "TOTAL":
     new_df0 = df
+elif options == "All LHP":
+    new_df0 = df[df["PitcherThrows"] == "Left"]
+elif options == "All RHP":
+    new_df0 = df[df["PitcherThrows"] == "Right"]
 else:
     new_df0 = df[df["Pitcher"] == options]
     
@@ -183,8 +195,13 @@ if pitch == "ALL":
     new_df1 = new_df0
 else:
     new_df1 = new_df0[new_df0["TaggedPitchType"] == pitch]
+    
+if side == "ALL":
+    new_df2 = new_df1
+else:
+    new_df2 = new_df1[new_df1["BatterSide"] == side]
         
-print_graphs(new_df1, PITCH_ORDER, OUTCOME_ORDER)
+print_graphs(new_df2, PITCH_ORDER, OUTCOME_ORDER)
 
         
         
