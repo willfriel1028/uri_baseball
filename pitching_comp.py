@@ -138,8 +138,8 @@ dfps = dfp.sort_values("Pitcher", ascending=True)
 
 #styled = dfps.style.applymap(highlight_domscore, subset=["DominantScore"])
 
-col1, col2, col3 = st.columns([2,1,2])
-with col2:
+col1, col2 = st.columns([1,1])
+with col1:
     st.header("Competition Score")
 
 st.dataframe(dfps, hide_index=True, height=800, width=800, use_container_width=True)
