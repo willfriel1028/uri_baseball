@@ -3,6 +3,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import streamlit as st
+from PIL import Image
 
 df = pd.read_csv("data/Fall25Scrim(updated).csv")
 
@@ -105,6 +106,8 @@ dfbs = dfb.sort_values("Player", ascending=True)
 col1, col2 = st.columns([1,1])
 with col1:
     st.header("Swing Decision")
+    
+st.image("images/swing_decision.png")
 
 st.dataframe(dfbs, hide_index=True, height=800)
 st.set_page_config(layout="wide")
