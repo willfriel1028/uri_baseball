@@ -49,6 +49,7 @@ def pitchers_stats_report(df):
     dfx["WHIP"] = round((dfx["BB"] + dfx["Hits"]) / dfx["IP"], 2)
     dfx["CalledStrikes"] = len(df[df["PitchCall"] == "StrikeCalled"])
     dfx["Whiffs"] = len(df[df["PitchCall"] == "StrikeSwinging"])
+    dfx["CSW%"] = round(((dfx["CalledStrikes"] + dfx["Whiffs"]) * 100) / dfx["TotalPitches"], 1)
     
     return dfx
 
