@@ -182,6 +182,8 @@ PITCH_ORDER = list(df["TaggedPitchType"].unique())
 df_sorted = df.sort_values("Batter")
 total = ["TOTAL", "All LHB", "All RHB"]
 names = list(df_sorted["Batter"].unique())
+names.remove("Creed, Will")
+names.remove("Houchens, Sam")
 
 choices = total + names
 
