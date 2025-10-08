@@ -30,7 +30,7 @@ def uri_batters_report(df):
     final_df = move_column(final_df, "Swing%vsStrike", 6)
     final_df = move_column(final_df, "Hold%vsBall", 7)
     final_df = move_column(final_df, "Score/PA", 5)
-    final_df = final_df.drop("Pitches", axis=1)
+    #final_df = final_df.drop("Pitches", axis=1)
         
     #final_df.to_csv(csv + "_batters_report.csv")
     
@@ -54,19 +54,12 @@ def batters_stats_report(df, pitches):
     dfx["AB"] = len(df[(df["PitchCall"] == "InPlay") | (df["KorBB"] == "Strikeout")])
     dfx["Pitches"] = len(df) - len(df[df["PitchCall"] == "HitByPitch"])
     dfx["SwingAtStrike"] = len(df_strikes[(df_strikes["PitchCall"] == "InPlay") | (df_strikes["PitchCall"] == "FoulBallNotFieldable") | (df_strikes["PitchCall"] == "StrikeSwinging")])
-    dfx["StrikeTaken"] = len(df_strikes[(df_strikes["PitchCall"] == "StrikeCalled")])
+    dfx["StrikeTaken"] = len(df_strikes[(df_strikes["PitchCall"] == "StrikeCalled") | (df_strikes["PitchCall"] == "BallCalled")])
     dfx["SwingAtBall"] = len(df_balls[(df_balls["PitchCall"] == "InPlay") | (df_balls["PitchCall"] == "FoulBallNotFieldable") | (df_balls["PitchCall"] == "StrikeSwinging")])
-    dfx["BallTaken"] = len(df_balls[df_balls["PitchCall"] == "BallCalled"])
+    dfx["BallTaken"] = len(df_balls[(df_balls["PitchCall"] == "BallCalled") | (df_balls["PitchCall"] == "StrikeCalled")])
     dfx["IZMiss"] = len(df_strikes[df_strikes["PitchCall"] == "StrikeSwinging"])
     dfx["2K BIP/Foul"] = len(df[(df["Strikes"] == 2) & ((df["PitchCall"] == "FoulBallNotFieldable") | (df["PitchCall"] == "InPlay"))])
     dfx["Score"] = (dfx["SwingAtStrike"] - dfx["StrikeTaken"] - (2 * dfx["SwingAtBall"]) + dfx["BallTaken"] - (2 * dfx["IZMiss"]) + dfx["2K BIP/Foul"])
-    
-    for i in range(len(df_strikes)):
-        if df_strikes["PitchCall"].iloc[i] == "BallCalled":
-            dfx["BallTaken"] = dfx["BallTaken"] + 1
-    for i in range(len(df_balls)):
-        if df_balls["PitchCall"].iloc[i] == "StrikeCalled":
-            dfx["StrikeTaken"] = dfx["StrikeTaken"] + 1
     
     dfx["StrikesSeen"] = dfx["StrikeTaken"] + dfx["SwingAtStrike"]
     dfx["BallsSeen"] = dfx["BallTaken"] + dfx["SwingAtBall"]
@@ -89,8 +82,8 @@ def batters_stats_report(df, pitches):
     df_correct = pd.concat([correct_strikes, correct_balls], ignore_index=True)
     df_incorrect = pd.concat([incorrect_strikes, incorrect_balls], ignore_index=True)
     
-    dfx["Correct_Decisions"] = len(df_correct)
-    dfx["Incorrect_Decisions"] = len(df_incorrect)
+    dfx["Correct_Decisions"] = dfx["SwingAtStrike"] + dfx["BallTaken"]
+    dfx["Incorrect_Decisions"] = dfx["StrikeTaken"] + dfx["SwingAtBall"]
     dfx["Correct%"] = round((dfx["Correct_Decisions"] / dfx["Pitches"]) * 100, 1)
     dfx["Score/PA"] = round(dfx["Score"] / dfx["PA"], 2)
                
