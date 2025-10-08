@@ -30,7 +30,7 @@ def uri_batters_report(df):
     final_df = move_column(final_df, "Swing%vsStrike", 6)
     final_df = move_column(final_df, "Hold%vsBall", 7)
     final_df = move_column(final_df, "Score/PA", 5)
-    #final_df = final_df.drop("Pitches", axis=1)
+    final_df = final_df.drop("Pitches", axis=1)
         
     #final_df.to_csv(csv + "_batters_report.csv")
     
