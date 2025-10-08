@@ -10,6 +10,8 @@ df = pd.read_csv("data/Fall25Scrim(updated).csv")
 def uri_batters_report(df):
     
     names = list(df["Batter"].unique())
+    names.remove("Creed, Will")
+    names.remove("Houchens, Sam")
         
     dfs = []
     
@@ -79,10 +81,10 @@ def batters_stats_report(df, pitches):
     else:
         dfx["Hold%vsBalll"] = 0
         
-    correct_strikes = df_strikes[(df_strikes["PitchCall"] == "InPlay") | (df_strikes["PitchCall"] == "FoulBallNotFieldable") | (df_strikes["PitchCall"] == "StrikeSwinging") | (df_strikes["PitchCall"] == "BallCalled")]
-    correct_balls = df_balls[df_balls["PitchCall"] == "BallCalled"]
-    incorrect_strikes = df_strikes[df_strikes["PitchCall"] == "StrikeCalled"]
-    incorrect_balls = df_balls[(df_balls["PitchCall"] == "InPlay") | (df_balls["PitchCall"] == "FoulBallNotFieldable") | (df_balls["PitchCall"] == "StrikeSwinging") | (df_balls["PitchCall"] == "StrikeCalled")]
+    correct_strikes = df_strikes[(df_strikes["PitchCall"] == "InPlay") | (df_strikes["PitchCall"] == "FoulBallNotFieldable") | (df_strikes["PitchCall"] == "StrikeSwinging")]
+    correct_balls = df_balls[(df_balls["PitchCall"] == "BallCalled") | (df_balls["PitchCall"] == "StrikeCalled")]
+    incorrect_strikes = df_strikes[(df_strikes["PitchCall"] == "StrikeCalled") | (df_strikes["PitchCall"] == "BallCalled")]
+    incorrect_balls = df_balls[(df_balls["PitchCall"] == "InPlay") | (df_balls["PitchCall"] == "FoulBallNotFieldable") | (df_balls["PitchCall"] == "StrikeSwinging")]
     
     df_correct = pd.concat([correct_strikes, correct_balls], ignore_index=True)
     df_incorrect = pd.concat([incorrect_strikes, incorrect_balls], ignore_index=True)

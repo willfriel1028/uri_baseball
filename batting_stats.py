@@ -9,6 +9,8 @@ df = pd.read_csv("data/Fall25Scrim(updated).csv")
 def uri_batters_report(df):
     
     names = list(df["Batter"].unique())
+    names.remove("Creed, Will")
+    names.remove("Houchens, Sam")
         
     dfs = []
     
