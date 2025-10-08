@@ -27,8 +27,8 @@ def uri_batters_report(df):
     
     final_df = move_column(final_df, "Score", 4)
     final_df = move_column(final_df, "Correct%", 5)
-    final_df = move_column(final_df, "Swing%vsStrike", 6)
-    final_df = move_column(final_df, "Hold%vsBall", 7)
+    final_df = move_column(final_df, "SwingVsStrike%", 6)
+    final_df = move_column(final_df, "NoSwingVsBall%", 7)
     final_df = move_column(final_df, "Score/PA", 5)
     final_df = final_df.drop("Pitches", axis=1)
         
@@ -65,14 +65,14 @@ def batters_stats_report(df, pitches):
     dfx["BallsSeen"] = dfx["BallTaken"] + dfx["SwingAtBall"]
     
     if dfx["StrikesSeen"] > 0:
-        dfx["Swing%vsStrike"] = round(((dfx["SwingAtStrike"] / dfx["StrikesSeen"]) * 100), 1)
+        dfx["SwingVsStrike%"] = round(((dfx["SwingAtStrike"] / dfx["StrikesSeen"]) * 100), 1)
     else:
-        dfx["Swing%vsStrike"] = 0
+        dfx["SwingVsStrike%"] = 0
     
     if dfx["BallsSeen"] > 0:
-        dfx["Hold%vsBall"] = round(((dfx["BallTaken"] / dfx["BallsSeen"]) * 100), 1)
+        dfx["NoSwingVsBall%"] = round(((dfx["BallTaken"] / dfx["BallsSeen"]) * 100), 1)
     else:
-        dfx["Hold%vsBalll"] = 0
+        dfx["NoSwingVsBall%"] = 0
         
     correct_strikes = df_strikes[(df_strikes["PitchCall"] == "InPlay") | (df_strikes["PitchCall"] == "FoulBallNotFieldable") | (df_strikes["PitchCall"] == "StrikeSwinging")]
     correct_balls = df_balls[(df_balls["PitchCall"] == "BallCalled") | (df_balls["PitchCall"] == "StrikeCalled")]
