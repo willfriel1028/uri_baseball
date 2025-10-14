@@ -31,7 +31,7 @@ def pitchers_stats_report(df):
     dfx = {}
     
     dfx["Pitcher"] = df["Pitcher"].iloc[0]
-    dfx["G"] = len(df["Date"].unique())
+    dfx["G"] = len(df["Date"].dropna().unique())    
     dfx["IP"] = round((len(df[df["KorBB"] == "Strikeout"]) + sum(df["OutsOnPlay"])) / 3, 2)
     dfx["TotalPitches"] = len(df)
     dfx["Hits"] = len(df[(df["PlayResult"] == "Single") | (df["PlayResult"] == "Double") | (df["PlayResult"] == "Triple") | (df["PlayResult"] == "HomeRun")])

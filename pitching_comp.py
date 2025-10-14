@@ -120,7 +120,7 @@ def pitchers_stats_report(df):
     
     dfx["CompetitionScore"] = dfx["0-2 or 1-2"] + dfx["K"] + dfx["4PitchesOrLess"] + dfx["IPw/0s"] + dfx["LeadoffOut"] + (2 * dfx["123"]) - dfx["BB"] - dfx["Runs"] - dfx["Hits"] - dfx["HBP on Offspeed"] - dfx["LeadoffOn"]
     dfx["CompetitionScore/IP"] = round(dfx["CompetitionScore"] / dfx["IP"], 2)
-    dfx["G"] = len(df["Date"].unique())
+    dfx["G"] = len(df["Date"].dropna().unique())
     
     return dfx
 
