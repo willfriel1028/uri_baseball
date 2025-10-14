@@ -167,9 +167,16 @@ col1, col2, col3 = st.columns([1,1,1])
 with col1:
     side = st.selectbox("Batter Side", options=choices)
     
-dates = list(df["Date"].dropna().unique())
-alld = ["ALL"]
-choices = alld + dates
+if options not in not_valid:
+    dfp = df[df["Pitcher"] == options]
+    alld = ["TOTAL"]
+    dates = list(dfp["Date"].dropna().unique())
+    choices = alld + dates
+else:
+    alld = ["TOTAL"]
+    dates = list(df["Date"].dropna().unique())
+    choices = alld + dates
+
 col1, col2, col3 = st.columns([1,1,1])
 with col1:
     date = st.selectbox("Date", options=choices)
@@ -208,7 +215,7 @@ if side == "ALL":
 else:
     new_df2 = new_df1[new_df1["BatterSide"] == side]
     
-if date == "ALL":
+if date == "TOTAL":
     new_df3 = new_df2
 else:
     new_df3 = new_df2[new_df2["Date"] == date]
