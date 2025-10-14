@@ -22,7 +22,7 @@ def uri_pitchers_report(df):
         
     final_df = pd.DataFrame(dfs).reset_index(drop=True)
     
-    drop = ["HBP", "K", "BB/9", "K/9", "Strikes", "Strike%", "TotalPitches", "BF", "HR", "WHIP", "CalledStrikes", "Whiffs"]
+    drop = ["HBP", "BB/9", "K/9", "Strikes", "Strike%", "TotalPitches", "BF", "HR", "WHIP", "CalledStrikes", "Whiffs"]
     final_df = final_df.drop(drop, axis=1)
     
     mean_score = final_df["CompetitionScore/IP"].mean()
@@ -38,6 +38,7 @@ def uri_pitchers_report(df):
     final_df = move_column(final_df, "Hits", 16)
     final_df = move_column(final_df, "IP", 1)
     final_df = move_column(final_df, "G", 1)
+    final_df = move_column(final_df, "K", 9)
         
     #final_df.to_csv(csv + "_pitchers_report.csv")
     
