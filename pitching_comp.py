@@ -37,6 +37,7 @@ def uri_pitchers_report(df):
     final_df = move_column(final_df, "Runs", 16)
     final_df = move_column(final_df, "Hits", 16)
     final_df = move_column(final_df, "IP", 1)
+    final_df = move_column(final_df, "G", 1)
         
     #final_df.to_csv(csv + "_pitchers_report.csv")
     
@@ -119,6 +120,7 @@ def pitchers_stats_report(df):
     
     dfx["CompetitionScore"] = dfx["0-2 or 1-2"] + dfx["K"] + dfx["4PitchesOrLess"] + dfx["IPw/0s"] + dfx["LeadoffOut"] + (2 * dfx["123"]) - dfx["BB"] - dfx["Runs"] - dfx["Hits"] - dfx["HBP on Offspeed"] - dfx["LeadoffOn"]
     dfx["CompetitionScore/IP"] = round(dfx["CompetitionScore"] / dfx["IP"], 2)
+    dfx["G"] = len(df["Date"].unique())
     
     return dfx
 
