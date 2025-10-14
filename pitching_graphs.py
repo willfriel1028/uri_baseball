@@ -167,6 +167,13 @@ col1, col2, col3 = st.columns([1,1,1])
 with col1:
     side = st.selectbox("Batter Side", options=choices)
     
+dates = list(df["Date"].dropna().unique())
+alld = ["ALL"]
+choices = alld + dates
+col1, col2, col3 = st.columns([1,1,1])
+with col1:
+    date = st.selectbox("Date", options=choices)
+    
 col1, col2, col3 = st.columns([1, 1, 1])
 with col1:
     st.header(options)
@@ -200,8 +207,13 @@ if side == "ALL":
     new_df2 = new_df1
 else:
     new_df2 = new_df1[new_df1["BatterSide"] == side]
+    
+if date == "ALL":
+    new_df3 = new_df2
+else:
+    new_df3 = new_df2[new_df2["Date"] == date]
         
-print_graphs(new_df2, PITCH_ORDER, OUTCOME_ORDER)
+print_graphs(new_df3, PITCH_ORDER, OUTCOME_ORDER)
 
         
         
