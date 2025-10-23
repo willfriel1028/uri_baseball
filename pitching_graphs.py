@@ -5,8 +5,17 @@ import seaborn as sns
 import plotly.express as px
 from matplotlib.lines import Line2D
 
-
-st.set_page_config(layout="wide")
+st.markdown(
+    """
+    <style>
+    html, body, [class*="stAppViewContainer"], [class*="main"], [class*="block-container"] {
+        height: 100%;
+        overflow: auto !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 def print_graphs(df, PITCH_ORDER, OUTCOME_ORDER):
     
@@ -131,6 +140,8 @@ df["RelSidei"] = df["RelSide"] * 12
 df["RelHeighti"] = df["RelHeight"] * 12
 df["Extensioni"] = df["Extension"] * 12
 PITCH_ORDER = list(df["TaggedPitchType"].unique())
+PITCH_ORDER.remove("Undefined")
+PITCH_ORDER.remove("Other")
 df = get_outcome(df)
 OUTCOME_ORDER = list(df["Outcome"].unique())
 
