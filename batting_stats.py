@@ -6,11 +6,14 @@ import streamlit as st
 
 df = pd.read_csv("data/Fall25Scrim(updated).csv")
 
+st.set_page_config(layout="wide")
+
 def uri_batters_report(df):
     
     names = list(df["Batter"].unique())
     names.remove("Creed, Will")
     names.remove("Houchens, Sam")
+    names.remove("Aikens, Parker")
         
     dfs = []
     

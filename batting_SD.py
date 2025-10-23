@@ -12,6 +12,7 @@ def uri_batters_report(df):
     names = list(df["Batter"].unique())
     names.remove("Creed, Will")
     names.remove("Houchens, Sam")
+    names.remove("Aikens, Parker")
         
     dfs = []
     

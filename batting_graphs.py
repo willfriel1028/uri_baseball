@@ -6,7 +6,17 @@ import seaborn as sns
 import plotly.express as px
 from matplotlib.lines import Line2D
 
-st.set_page_config(layout="wide")
+st.markdown(
+    """
+    <style>
+    html, body, [class*="stAppViewContainer"], [class*="main"], [class*="block-container"] {
+        height: 100%;
+        overflow: auto !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 def print_graphs(df):
     
@@ -184,6 +194,7 @@ total = ["TOTAL", "All LHB", "All RHB"]
 names = list(df_sorted["Batter"].unique())
 names.remove("Creed, Will")
 names.remove("Houchens, Sam")
+names.remove("Aikens, Parker")
 
 choices = total + names
 
