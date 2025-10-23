@@ -18,6 +18,8 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+st.set_page_config(layout="wide")
+
 def print_graphs(df):
     
     col1, col2 = st.columns(2)

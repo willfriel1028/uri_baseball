@@ -17,6 +17,8 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+st.set_page_config(layout="wide")
+
 def print_graphs(df, PITCH_ORDER, OUTCOME_ORDER):
     
     col1, col2 = st.columns(2)
