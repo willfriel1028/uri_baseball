@@ -4,6 +4,16 @@ import math
 import matplotlib.pyplot as plt
 import streamlit as st
 
+st.markdown("""
+    <style>
+    div[data-baseweb="segmented-control"] button {
+        font-size: 20px !important;
+        padding: 12px 24px !important;
+        height: auto !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 fall = pd.read_csv("data/Fall25Scrim(updated).csv")
 spring = pd.read_csv("data/Spring26Scrim(updated).csv")
 
