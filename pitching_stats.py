@@ -7,7 +7,7 @@ import streamlit as st
 st.markdown("""
     <style>
     div[data-baseweb="segmented-control"] button {
-        font-size: 20px !important;
+        font-size: 100px !important;
         padding: 12px 24px !important;
         height: auto !important;
     }
