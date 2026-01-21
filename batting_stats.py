@@ -4,16 +4,31 @@ import math
 import matplotlib.pyplot as plt
 import streamlit as st
 
-df = pd.read_csv("data/Fall25Scrim(updated).csv")
+fall = pd.read_csv("data/Fall25Scrim(updated).csv")
+spring = pd.read_csv("data/Spring26Scrim(updated).csv")
 
+selections = st.pills("Include Data From:", 
+                     ["Fall Scrimmages", "Spring Scrimmages"],
+                     selection_mode="multi")
+
+if selections == ["Fall Scrimmages"]:
+    df = fall
+elif selections == ["Spring Scrimmages"]:
+    df = spring
+else:
+    df = pd.concat([fall, spring])
+    
 st.set_page_config(layout="wide")
 
 def uri_batters_report(df):
     
     names = list(df["Batter"].unique())
-    names.remove("Creed, Will")
-    names.remove("Houchens, Sam")
-    names.remove("Aikens, Parker")
+    if "Creed, Will" in names:
+        names.remove("Creed, Will")
+    if "Houchens, Sam" in names:
+        names.remove("Houchens, Sam")
+    if "Aikens, Parker" in names:
+        names.remove("Aikens, Parker")
         
     dfs = []
     

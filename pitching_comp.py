@@ -4,8 +4,20 @@ import math
 import matplotlib.pyplot as plt
 import streamlit as st
 
-df = pd.read_csv("data/Fall25Scrim(updated).csv")
+fall = pd.read_csv("data/Fall25Scrim(updated).csv")
+spring = pd.read_csv("data/Spring26Scrim(updated).csv")
 
+selections = st.pills("Include Data From:", 
+                     ["Fall Scrimmages", "Spring Scrimmages"],
+                     selection_mode="multi")
+
+if selections == ["Fall Scrimmages"]:
+    df = fall
+elif selections == ["Spring Scrimmages"]:
+    df = spring
+else:
+    df = pd.concat([fall, spring])
+    
 df["Pitcher"] = df["Pitcher"].replace("Grotyohann, Connor ", "Grotyohann, Connor")
 
 def uri_pitchers_report(df):

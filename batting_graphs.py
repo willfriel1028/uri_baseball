@@ -186,17 +186,32 @@ def correct_zones(df):
     ax.set_ylabel("Plate Location")
     st.pyplot(fig)
 
-data = pd.read_csv("data/Fall25Scrim(updated).csv")
-df = data[data["BatterTeam"] == "RHO_RAM"]
+fall = pd.read_csv("data/Fall25Scrim(updated).csv")
+spring = pd.read_csv("data/Spring26Scrim(updated).csv")
 
+selections = st.pills("Include Data From:", 
+                     ["Fall Scrimmages", "Spring Scrimmages"],
+                     selection_mode="multi")
+
+if selections == ["Fall Scrimmages"]:
+    data = fall
+elif selections == ["Spring Scrimmages"]:
+    data = spring
+else:
+    data = pd.concat([fall, spring])
+
+df = data[data["BatterTeam"] == "RHO_RAM"]
 PITCH_ORDER = list(df["TaggedPitchType"].unique())
 
 df_sorted = df.sort_values("Batter")
 total = ["TOTAL", "All LHB", "All RHB"]
 names = list(df_sorted["Batter"].unique())
-names.remove("Creed, Will")
-names.remove("Houchens, Sam")
-names.remove("Aikens, Parker")
+if "Creed, Will" in names:
+    names.remove("Creed, Will")
+if "Houchens, Sam" in names:
+    names.remove("Houchens, Sam")
+if "Aikens, Parker" in names:
+    names.remove("Aikens, Parker")
 
 choices = total + names
 

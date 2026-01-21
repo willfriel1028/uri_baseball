@@ -135,15 +135,32 @@ def get_outcome(df):
             df["Outcome"].iloc[i] = "Foul Ball Not Fieldable"
     return df   
 
-data = pd.read_csv("data/Fall25Scrim(updated).csv")
+fall = pd.read_csv("data/Fall25Scrim(updated).csv")
+spring = pd.read_csv("data/Spring26Scrim(updated).csv")
+
+selections = st.pills("Include Data From:", 
+                     ["Fall Scrimmages", "Spring Scrimmages"],
+                     selection_mode="multi")
+
+if selections == ["Fall Scrimmages"]:
+    data = fall.copy()
+elif selections == ["Spring Scrimmages"]:
+    data = spring.copy()
+else:
+    data = pd.concat([fall, spring], ignore_index=True)
+
+data = data.reset_index(drop=True)
+    
 df = data[data["PitcherTeam"] == "RHO_RAM"]
 df["Pitcher"] = df["Pitcher"].replace("Grotyohann, Connor ", "Grotyohann, Connor")
 df["RelSidei"] = df["RelSide"] * 12
 df["RelHeighti"] = df["RelHeight"] * 12
 df["Extensioni"] = df["Extension"] * 12
 PITCH_ORDER = list(df["TaggedPitchType"].unique())
-PITCH_ORDER.remove("Undefined")
-PITCH_ORDER.remove("Other")
+if "Undefined" in PITCH_ORDER:
+    PITCH_ORDER.remove("Undefined")
+if "Other" in PITCH_ORDER:
+    PITCH_ORDER.remove("Other")
 df = get_outcome(df)
 OUTCOME_ORDER = list(df["Outcome"].unique())
 
@@ -232,9 +249,11 @@ if date == "TOTAL":
     new_df3 = new_df2
 else:
     new_df3 = new_df2[new_df2["Date"] == date]
-        
-print_graphs(new_df3, PITCH_ORDER, OUTCOME_ORDER)
+    
+filtered_pitch_order = [p for p in PITCH_ORDER if p in new_df3["TaggedPitchType"].unique()]
+filtered_outcome_order = [o for o in OUTCOME_ORDER if o in new_df3["Outcome"].unique()]
 
+print_graphs(new_df3, filtered_pitch_order, filtered_outcome_order)
         
         
   
