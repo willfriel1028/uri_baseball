@@ -8,7 +8,7 @@ st.markdown("""
     <style>
     div[data-baseweb="segmented-control"] button {
         font-size: 100px !important;
-        padding: 12px 24px !important;
+        padding: 24px 48px !important;
         height: auto !important;
     }
     </style>
