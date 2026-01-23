@@ -18,12 +18,13 @@ st.markdown(
 )
 
 st.set_page_config(layout="wide")
-
+#D93434
+#FF8800
 PITCH_COLORS = {
-    "Fastball": "#D93434",
+    "Fastball": "#FF8800",
     "Curveball": "#919090",
     "Slider": "#333DD6",
-    "ChangeUp": "#FF8800",
+    "ChangeUp": "#D93434",
     "Cutter": "#28BD4F",
     "Splitter": "#AA00FF",
     "Sinker": "#C8FF00",
