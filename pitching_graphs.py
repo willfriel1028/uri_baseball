@@ -19,14 +19,26 @@ st.markdown(
 
 st.set_page_config(layout="wide")
 
-def print_graphs(df, PITCH_ORDER, OUTCOME_ORDER):
+PITCH_COLORS = {
+    "Fastball": "#D93434",
+    "Curveball": "#919090",
+    "Slider": "#333DD6",
+    "ChangeUp": "#FF8800",
+    "Cutter": "#28BD4F",
+    "Splitter": "#AA00FF",
+    "Sinker": "#C8FF00",
+    "Knuckleball": "#BB8FCE",
+    "Sweeper": "#34CED9",
+}
+
+def print_graphs(df, PITCH_ORDER, OUTCOME_ORDER, PITCH_COLORS):
     
     col1, col2 = st.columns(2)
     
     with col1:
-        pitchbreak(df, PITCH_ORDER)
+        pitchbreak(df, PITCH_ORDER, PITCH_COLORS)
     with col2:
-        releasepoint(df, PITCH_ORDER)
+        releasepoint(df, PITCH_ORDER, PITCH_COLORS)
         
     
         
@@ -35,11 +47,14 @@ def print_graphs(df, PITCH_ORDER, OUTCOME_ORDER):
     with col1:
         pitch_outcome(df, OUTCOME_ORDER)
     with col2:
-        extension(df, PITCH_ORDER)
+        extension(df, PITCH_ORDER, PITCH_COLORS)
         
-def pitchbreak(df, PITCH_ORDER):
+def pitchbreak(df, PITCH_ORDER, PITCH_COLORS):
+    
+    palette = [PITCH_COLORS.get(pitch, "#808080") for pitch in PITCH_ORDER]
+    
     fig, ax = plt.subplots(figsize=(6,6))
-    sns.scatterplot(data=df, x='HorzBreak', y='InducedVertBreak', hue='TaggedPitchType', hue_order=PITCH_ORDER, clip_on=False, ax=ax)
+    sns.scatterplot(data=df, x='HorzBreak', y='InducedVertBreak', hue='TaggedPitchType', hue_order=PITCH_ORDER, palette=palette, clip_on=False, ax=ax)
     ax.set_title("Pitch Break Chart")
     ax.set_xlabel("Horizontal Break")
     ax.set_ylabel("Induced Vertical Break")
@@ -56,9 +71,12 @@ def pitchbreak(df, PITCH_ORDER):
     #ax.legend().remove()
     st.pyplot(fig)
     
-def releasepoint(df, PITCH_ORDER):
+def releasepoint(df, PITCH_ORDER, PITCH_COLORS):
+    
+    palette = [PITCH_COLORS.get(pitch, "#808080") for pitch in PITCH_ORDER]
+    
     fig, ax = plt.subplots(figsize=(6,6))
-    sns.scatterplot(data=df, x="RelSidei", y="RelHeighti", hue="TaggedPitchType", hue_order=PITCH_ORDER, ax=ax)
+    sns.scatterplot(data=df, x="RelSidei", y="RelHeighti", hue="TaggedPitchType", hue_order=PITCH_ORDER, palette=palette, ax=ax)
     ax.set_title("Release Point Chart")
     ax.set_xlabel("inches")
     ax.set_ylabel("inches")
@@ -74,9 +92,12 @@ def releasepoint(df, PITCH_ORDER):
     #ax.legend().remove()
     st.pyplot(fig)
     
-def extension(df, PITCH_ORDER):
+def extension(df, PITCH_ORDER, PITCH_COLORS):
+    
+    palette = [PITCH_COLORS.get(pitch, "#808080") for pitch in PITCH_ORDER]
+    
     fig, ax = plt.subplots(figsize=(6,6))
-    sns.scatterplot(data=df, x="RelSidei", y="Extensioni", hue="TaggedPitchType", hue_order=PITCH_ORDER, ax=ax)
+    sns.scatterplot(data=df, x="RelSidei", y="Extensioni", hue="TaggedPitchType", hue_order=PITCH_ORDER, palette=palette, ax=ax)
     ax.set_title("Extension Chart")
     ax.set_xlabel("inches")
     ax.set_ylabel("inches")
@@ -253,7 +274,7 @@ else:
 filtered_pitch_order = [p for p in PITCH_ORDER if p in new_df3["TaggedPitchType"].unique()]
 filtered_outcome_order = [o for o in OUTCOME_ORDER if o in new_df3["Outcome"].unique()]
 
-print_graphs(new_df3, filtered_pitch_order, filtered_outcome_order)
+print_graphs(new_df3, filtered_pitch_order, filtered_outcome_order, PITCH_COLORS)
         
         
   
