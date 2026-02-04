@@ -18,8 +18,7 @@ st.markdown(
 )
 
 st.set_page_config(layout="wide")
-#D93434
-#FF8800
+
 PITCH_COLORS = {
     "Fastball": "#FF8800",
     "Curveball": "#919090",
