@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import streamlit as st
 from PIL import Image
 
+st.set_page_config(layout="wide")
+
 fall = pd.read_csv("data/Fall25Scrim(updated).csv")
 spring = pd.read_csv("data/Spring26Scrim(updated).csv")
 
@@ -123,4 +125,3 @@ with col1:
 st.image("images/swing_decision.png")
 
 st.dataframe(dfbs, hide_index=True, height=800)
-st.set_page_config(layout="wide")

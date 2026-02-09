@@ -4,6 +4,8 @@ import math
 import matplotlib.pyplot as plt
 import streamlit as st
 
+st.set_page_config(layout="wide")
+
 fall = pd.read_csv("data/Fall25Scrim(updated).csv")
 spring = pd.read_csv("data/Spring26Scrim(updated).csv")
 
@@ -82,4 +84,3 @@ with col1:
     st.header("Pitching Statistics")
 
 st.dataframe(dfps, hide_index=True, height=800)
-st.set_page_config(layout="wide")

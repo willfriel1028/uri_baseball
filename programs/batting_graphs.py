@@ -6,6 +6,8 @@ import seaborn as sns
 import plotly.express as px
 from matplotlib.lines import Line2D
 
+st.set_page_config(layout="wide")
+
 st.markdown(
     """
     <style>
@@ -17,8 +19,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-st.set_page_config(layout="wide")
 
 def print_graphs(df):
     
