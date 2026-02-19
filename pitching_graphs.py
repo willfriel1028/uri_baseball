@@ -177,6 +177,7 @@ df["Pitcher"] = df["Pitcher"].replace("Grotyohann, Connor ", "Grotyohann, Connor
 df["RelSidei"] = df["RelSide"] * 12
 df["RelHeighti"] = df["RelHeight"] * 12
 df["Extensioni"] = df["Extension"] * 12
+df.loc[df["Pitcher"] == "Kopetski, Josh", "PitcherThrows"] = "Left"
 PITCH_ORDER = list(df["TaggedPitchType"].unique())
 if "Undefined" in PITCH_ORDER:
     PITCH_ORDER.remove("Undefined")
