@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 from matplotlib.lines import Line2D
+import glob
 
 st.markdown(
     """
@@ -158,19 +159,22 @@ def get_outcome(df):
 
 fall = pd.read_csv("data/Fall25Scrim(updated).csv")
 spring = pd.read_csv("data/Spring26Scrim(updated).csv")
+season = pd.concat([pd.read_csv(f) for f in glob.glob("data/26Season/*.csv")], ignore_index=True)
 
 selections = st.pills("Include Data From:", 
-                     ["Fall Scrimmages", "Spring Scrimmages"],
+                     ["Regular Season", "Fall Scrimmages"],
                      selection_mode="multi")
 
 if selections == ["Fall Scrimmages"]:
-    data = fall.copy()
-elif selections == ["Spring Scrimmages"]:
-    data = spring.copy()
+    df = fall
+elif selections == ["Regular Season"]:
+    df = season
+elif selections == ["Regular Season", "Fall Scrimmages"]:
+    df = pd.concat([fall, season])
 else:
-    data = pd.concat([fall, spring], ignore_index=True)
+    df = season
 
-data = data.reset_index(drop=True)
+data = df.reset_index(drop=True)
     
 df = data[data["PitcherTeam"] == "RHO_RAM"]
 df["Pitcher"] = df["Pitcher"].replace("Grotyohann, Connor ", "Grotyohann, Connor")

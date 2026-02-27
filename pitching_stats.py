@@ -3,20 +3,24 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import streamlit as st
+import glob
 
 fall = pd.read_csv("data/Fall25Scrim(updated).csv")
 spring = pd.read_csv("data/Spring26Scrim(updated).csv")
+season = pd.concat([pd.read_csv(f) for f in glob.glob("data/26Season/*.csv")], ignore_index=True)
 
 selections = st.pills("Include Data From:", 
-                     ["Fall Scrimmages", "Spring Scrimmages"],
+                     ["Regular Season", "Fall Scrimmages"],
                      selection_mode="multi")
 
 if selections == ["Fall Scrimmages"]:
     df = fall
-elif selections == ["Spring Scrimmages"]:
-    df = spring
+elif selections == ["Regular Season"]:
+    df = season
+elif selections == ["Regular Season", "Fall Scrimmages"]:
+    df = pd.concat([fall, season])
 else:
-    df = pd.concat([fall, spring])
+    df = season
 
 df["Pitcher"] = df["Pitcher"].replace("Grotyohann, Connor ", "Grotyohann, Connor")
 
@@ -51,15 +55,23 @@ def pitchers_stats_report(df):
     dfx["BB"] = len(df[df["KorBB"] == "Walk"])
     dfx["K"] = len(df[df["KorBB"] == "Strikeout"])
     dfx["HBP"] = len(df[df["PitchCall"] == "HitByPitch"])
-    dfx["RA"] = round((dfx["Runs"] / dfx["IP"]) * 9, 2)
-    dfx["BB/9"] = round((dfx["BB"] / dfx["IP"]) * 9, 2)
-    dfx["K/9"] = round((dfx["K"] / dfx["IP"]) * 9, 2)
+    if dfx["IP"] != 0:
+        dfx["RA"] = round((dfx["Runs"] / dfx["IP"]) * 9, 2)
+        dfx["BB/9"] = round((dfx["BB"] / dfx["IP"]) * 9, 2)
+        dfx["K/9"] = round((dfx["K"] / dfx["IP"]) * 9, 2)
+    elif dfx["IP"] == 0:
+        dfx["RA"] = np.nan
+        dfx["BB/9"] = np.nan
+        dfx["K/9"] = np.nan
     dfx["Strikes"] = len(df[(df["PitchCall"] == "StrikeCalled") | (df["PitchCall"] == "StrikeSwinging") | (df["PitchCall"] == "FoulBallNotFieldable") | (df["PitchCall"] == "InPlay")])
     dfx["Strike%"] = round((dfx["Strikes"] / dfx["TotalPitches"]) * 100, 1)
     firstp = df[df["PitchofPA"] == 1]
     dfx["BF"] = len(firstp)
     dfx["HR"] = len(df[df["PlayResult"] == "HomeRun"])
-    dfx["WHIP"] = round((dfx["BB"] + dfx["Hits"]) / dfx["IP"], 2)
+    if dfx["IP"] != 0:
+        dfx["WHIP"] = round((dfx["BB"] + dfx["Hits"]) / dfx["IP"], 2)
+    elif dfx["IP"] == 0:
+        dfx["WHIP"] = np.nan
     dfx["CalledStrikes"] = len(df[df["PitchCall"] == "StrikeCalled"])
     dfx["Whiffs"] = len(df[df["PitchCall"] == "StrikeSwinging"])
     dfx["CSW%"] = round(((dfx["CalledStrikes"] + dfx["Whiffs"]) * 100) / dfx["TotalPitches"], 1)

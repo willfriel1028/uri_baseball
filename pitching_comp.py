@@ -3,20 +3,24 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import streamlit as st
+import glob
 
 fall = pd.read_csv("data/Fall25Scrim(updated).csv")
 spring = pd.read_csv("data/Spring26Scrim(updated).csv")
+season = pd.concat([pd.read_csv(f) for f in glob.glob("data/26Season/*.csv")], ignore_index=True)
 
 selections = st.pills("Include Data From:", 
-                     ["Fall Scrimmages", "Spring Scrimmages"],
+                     ["Regular Season", "Fall Scrimmages"],
                      selection_mode="multi")
 
 if selections == ["Fall Scrimmages"]:
     df = fall
-elif selections == ["Spring Scrimmages"]:
-    df = spring
+elif selections == ["Regular Season"]:
+    df = season
+elif selections == ["Regular Season", "Fall Scrimmages"]:
+    df = pd.concat([fall, season])
 else:
-    df = pd.concat([fall, spring])
+    df = season
     
 df["Pitcher"] = df["Pitcher"].replace("Grotyohann, Connor ", "Grotyohann, Connor")
 
@@ -34,7 +38,7 @@ def uri_pitchers_report(df):
         
     final_df = pd.DataFrame(dfs).reset_index(drop=True)
     
-    drop = ["HBP", "BB/9", "K/9", "Strikes", "Strike%", "TotalPitches", "BF", "HR", "WHIP", "CalledStrikes", "Whiffs"]
+    drop = ["HBP", "Strikes", "Strike%", "TotalPitches", "BF", "HR", "CalledStrikes", "Whiffs"]
     final_df = final_df.drop(drop, axis=1)
     
     mean_score = final_df["CompetitionScore/IP"].mean()
@@ -65,8 +69,8 @@ def pitchers_stats_report(df):
     dfx["HBP"] = len(df[df["PitchCall"] == "HitByPitch"])
     dfx["BB"] = len(df[df["KorBB"] == "Walk"])
     dfx["K"] = len(df[df["KorBB"] == "Strikeout"])
-    dfx["BB/9"] = round((dfx["BB"] / dfx["IP"]) * 9, 2)
-    dfx["K/9"] = round((dfx["K"] / dfx["IP"]) * 9, 2)
+    #dfx["BB/9"] = round((dfx["BB"] / dfx["IP"]) * 9, 2)
+    #dfx["K/9"] = round((dfx["K"] / dfx["IP"]) * 9, 2)
     dfx["Strikes"] = len(df[(df["PitchCall"] == "StrikeCalled") | (df["PitchCall"] == "StrikeSwinging") | (df["PitchCall"] == "FoulBallNotFieldable") | (df["PitchCall"] == "InPlay")])
     dfx["TotalPitches"] = len(df)
     dfx["Strike%"] = round((dfx["Strikes"] / dfx["TotalPitches"]) * 100, 1)
@@ -82,7 +86,7 @@ def pitchers_stats_report(df):
     dfx["Hits"] = len(df[(df["PlayResult"] == "Single") | (df["PlayResult"] == "Double") | (df["PlayResult"] == "Triple") | (df["PlayResult"] == "HomeRun")])
     dfx["HR"] = len(df[df["PlayResult"] == "HomeRun"])
     dfx["Runs"] = sum(df["RunsScored"])
-    dfx["WHIP"] = round((dfx["BB"] + dfx["Hits"]) / dfx["IP"], 2)
+    #dfx["WHIP"] = round((dfx["BB"] + dfx["Hits"]) / dfx["IP"], 2)
     dfx["CalledStrikes"] = len(df[df["PitchCall"] == "StrikeCalled"])
     dfx["Whiffs"] = len(df[df["PitchCall"] == "StrikeSwinging"])
     oneK = df[(df["Strikes"] == 1) & (df["Balls"] <= 1)]
@@ -132,7 +136,10 @@ def pitchers_stats_report(df):
     dfx["Total-"] = dfx["BB"] + dfx["Runs"] + dfx["Hits"] + dfx["HBP on Offspeed"] + dfx["LeadoffOn"]
     
     dfx["CompetitionScore"] = dfx["0-2 or 1-2"] + dfx["K"] + dfx["4PitchesOrLess"] + dfx["IPw/0s"] + dfx["LeadoffOut"] + (2 * dfx["123"]) - dfx["BB"] - dfx["Runs"] - dfx["Hits"] - dfx["HBP on Offspeed"] - dfx["LeadoffOn"]
-    dfx["CompetitionScore/IP"] = round(dfx["CompetitionScore"] / dfx["IP"], 2)
+    if dfx["IP"] != 0:
+        dfx["CompetitionScore/IP"] = round(dfx["CompetitionScore"] / dfx["IP"], 2)
+    elif dfx["IP"] == 0:
+        dfx["CompetitionScore/IP"] = np.nan
     dfx["G"] = len(df["Date"].dropna().unique())
     
     return dfx

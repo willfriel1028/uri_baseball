@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 from matplotlib.lines import Line2D
+import glob
 
 st.markdown(
     """
@@ -188,19 +189,22 @@ def correct_zones(df):
 
 fall = pd.read_csv("data/Fall25Scrim(updated).csv")
 spring = pd.read_csv("data/Spring26Scrim(updated).csv")
+season = pd.concat([pd.read_csv(f) for f in glob.glob("data/26Season/*.csv")], ignore_index=True)
 
 selections = st.pills("Include Data From:", 
-                     ["Fall Scrimmages", "Spring Scrimmages"],
+                     ["Regular Season", "Fall Scrimmages"],
                      selection_mode="multi")
 
 if selections == ["Fall Scrimmages"]:
-    data = fall
-elif selections == ["Spring Scrimmages"]:
-    data = spring
+    df = fall
+elif selections == ["Regular Season"]:
+    df = season
+elif selections == ["Regular Season", "Fall Scrimmages"]:
+    df = pd.concat([fall, season])
 else:
-    data = pd.concat([fall, spring])
+    df = season
 
-df = data[data["BatterTeam"] == "RHO_RAM"]
+df = df[df["BatterTeam"] == "RHO_RAM"]
 PITCH_ORDER = list(df["TaggedPitchType"].unique())
 
 df_sorted = df.sort_values("Batter")
