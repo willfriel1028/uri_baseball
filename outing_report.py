@@ -8,16 +8,16 @@ MODELS_CACHE = {}
 
 st.set_page_config(layout="wide")
 
-file = st.file_uploader("Import Trackman file", type="csv")
+files = st.file_uploader("Import Trackman file", type="csv", accept_multiple_files=True)
 
-if "data" in st.session_state:
-    if st.button("Clear Data"):
-        del st.session_state.data
-        st.session_state.file_key = st.session_state.get("file_key", 0) + 1 
-        st.rerun()
+if st.button("Clear Data"):
+    del st.session_state.data
+    st.session_state.file_key = st.session_state.get("file_key", 0) + 1 
+    st.rerun()
 
-if file is not None and "data" not in st.session_state:
-    st.session_state.data = pd.read_csv(file).reset_index(drop=True)
+if files and "data" not in st.session_state:
+    dfs = [pd.read_csv(f) for f in files]
+    st.session_state.data = pd.concat(dfs, ignore_index=True)
 
 if "data" not in st.session_state:
     st.info("Please upload a CSV to get started.")
