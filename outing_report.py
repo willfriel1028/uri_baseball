@@ -264,10 +264,10 @@ for pitch in pitches:
         dfx["Strike %"] = round((dfx["Strikes"] / len(x)) * 100, 1)
         dfx["Zone %"] = round(((len(xz) / len(x)) * 100), 1)
         dfx["Swing %"] = round(((len(xs) / len(x)) * 100), 1)
-        dfx["Contact %"] = round(((len(xc) / len(x)) * 100), 1)
+        dfx["Contact %"] = round(((len(xc) / len(xs)) * 100), 1)
         dfx["CS %"] = round(((len(x[x["PitchCall"] == "StrikeCalled"]) / len(x)) * 100), 1)
-        dfx["Whiff %"] = round(((len(x[x["PitchCall"] == "StrikeSwinging"]) / len(x)) * 100), 1)
-        dfx["CSW %"] = round(((len(xcsw) / len(x)) * 100), 1)
+        dfx["Whiff %"] = round(((len(x[x["PitchCall"] == "StrikeSwinging"]) / len(xs)) * 100), 1)
+        dfx["CSW %"] = dfx["CS %"] + dfx["Whiff %"]
     else:
         dfx["Strike %"] = np.nan
         dfx["Zone %"] = np.nan

@@ -152,7 +152,7 @@ def get_outcome(df):
         elif df["PitchCall"].iloc[i] == "HitByPitch":
             df["Outcome"].iloc[i] = "HBP"
         elif df["PitchCall"].iloc[i] == "InPlay":
-            df["Outcome"].iloc[i] = "In Play"
+            df["Outcome"].iloc[i] = "InPlay"
         elif df["PitchCall"].iloc[i] == "FoulBallNotFieldable":
             df["Outcome"].iloc[i] = "Foul Ball Not Fieldable"
     return df   
