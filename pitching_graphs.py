@@ -155,6 +155,8 @@ def get_outcome(df):
             df["Outcome"].iloc[i] = "In Play"
         elif df["PitchCall"].iloc[i] == "FoulBallNotFieldable":
             df["Outcome"].iloc[i] = "Foul Ball Not Fieldable"
+        else:
+            df["Outcome"].iloc[i] = "Other"
     return df   
 
 fall = pd.read_csv("data/Fall25Scrim(updated).csv")
