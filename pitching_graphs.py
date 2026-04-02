@@ -140,7 +140,7 @@ def pitch_outcome(df, OUTCOME_ORDER):
     
 def get_outcome(df):
     
-    df["Outcome"] = [0 for _ in range(len(df))]
+    df["Outcome"] = ["" for _ in range(len(df))]
     
     for i in range(0, len(df)):
         if df["PitchCall"].iloc[i] == "StrikeCalled":
@@ -152,7 +152,7 @@ def get_outcome(df):
         elif df["PitchCall"].iloc[i] == "HitByPitch":
             df["Outcome"].iloc[i] = "HBP"
         elif df["PitchCall"].iloc[i] == "InPlay":
-            df["Outcome"].iloc[i] = "InPlay"
+            df["Outcome"].iloc[i] = "In Play"
         elif df["PitchCall"].iloc[i] == "FoulBallNotFieldable":
             df["Outcome"].iloc[i] = "Foul Ball Not Fieldable"
     return df   
