@@ -42,7 +42,9 @@ with x2:
     names = list(data["Pitcher"].unique())
     pitcher = st.selectbox("Choose a Pitcher", options=names)
 
-df = data[data["Pitcher"] == pitcher]  
+df = data[data["Pitcher"] == pitcher]
+df["RelSidei"] = df["RelSide"] * 12
+df["RelHeighti"] = df["RelHeight"] * 12
 
 c1, c2 = st.columns([1,1])
 with c2:
@@ -94,13 +96,19 @@ with c2:
         
         new_type = st.selectbox("Reclassify all selected as:", pitch_types)
         
-        if st.button("Apply Change"):
-            for idx in selected_indices:
-                st.session_state.data.at[idx, "TaggedPitchType"] = new_type
-            st.success(f"{len(selected_indices)} pitches reclassified to **{new_type}**!")
-            st.rerun()
-
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Apply Change"):
+                for idx in selected_indices:
+                    st.session_state.data.at[idx, "TaggedPitchType"] = new_type
+                st.rerun()
+        with col2:
+            if st.button("Delete Selected"):
+                st.session_state.data = st.session_state.data.drop(index=selected_indices).reset_index(drop=True)
+                st.rerun()
+            
 with c1:
+    
     fig2 = go.Figure()
     for pitch, group in df.groupby("TaggedPitchType"):
         fig2.add_trace(go.Scatter(
@@ -137,6 +145,56 @@ with c1:
 
     if event2 and event2.selection and event2.selection.points:
         selected_indices = [int(pt["customdata"]) for pt in event2.selection.points]
+        
+        st.markdown(f"**{len(selected_indices)} pitches selected**")
+        
+        new_type = st.selectbox("Reclassify all selected as:", pitch_types)
+        
+        if st.button("Apply Change"):
+            for idx in selected_indices:
+                st.session_state.data.at[idx, "TaggedPitchType"] = new_type
+            st.success(f"{len(selected_indices)} pitches reclassified to **{new_type}**!")
+            st.rerun()
+
+c1, c2 = st.columns([1,1])
+with c1:
+
+    fig3 = go.Figure()
+    for pitch, group in df.groupby("TaggedPitchType"):
+        fig3.add_trace(go.Scatter(
+            x=group["RelSidei"],
+            y=group["RelHeighti"],
+            mode="markers",
+            name=pitch,
+            marker=dict(size=10, color=colors.get(pitch, "black"), line=dict(color="white", width=0.5)),
+            customdata=group.index.tolist(),
+        ))
+
+    fig3.update_layout(
+        title="Release Point Chart",
+        xaxis_title="Release Side (in)",
+        yaxis_title="Release Height (in)",
+        width=600,
+        height=600,
+        xaxis=dict(range=[-48, 48], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
+        yaxis=dict(range=[0, 96], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        margin=dict(l=20, r=20, t=40, b=20),
+        shapes=[
+            dict(
+                type="rect",
+                xref="paper", yref="paper",
+                x0=0, y0=0, x1=1, y1=1,
+                line=dict(color="black", width=1)
+            )
+        ]
+    )
+
+    event3 = st.plotly_chart(fig3, on_select="rerun", key="rel_plot")
+
+    if event3 and event3.selection and event3.selection.points:
+        selected_indices = [int(pt["customdata"]) for pt in event3.selection.points]
         
         st.markdown(f"**{len(selected_indices)} pitches selected**")
         
