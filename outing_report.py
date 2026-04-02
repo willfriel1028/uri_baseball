@@ -47,6 +47,9 @@ df["RelSidei"] = df["RelSide"] * 12
 df["RelHeighti"] = df["RelHeight"] * 12
 
 c1, c2 = st.columns([1,1])
+
+###### PITCH BREAK CHART
+
 with c2:
     
     pitch_types = ["FA", "SL", "CU", "CH", "SI", "FC", "FS"]
@@ -106,7 +109,9 @@ with c2:
             if st.button("Delete Selected"):
                 st.session_state.data = st.session_state.data.drop(index=selected_indices).reset_index(drop=True)
                 st.rerun()
-            
+
+###### SPEED / SPIN CHART
+    
 with c1:
     
     fig2 = go.Figure()
@@ -150,13 +155,21 @@ with c1:
         
         new_type = st.selectbox("Reclassify all selected as:", pitch_types)
         
-        if st.button("Apply Change"):
-            for idx in selected_indices:
-                st.session_state.data.at[idx, "TaggedPitchType"] = new_type
-            st.success(f"{len(selected_indices)} pitches reclassified to **{new_type}**!")
-            st.rerun()
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Apply Change"):
+                for idx in selected_indices:
+                    st.session_state.data.at[idx, "TaggedPitchType"] = new_type
+                st.rerun()
+        with col2:
+            if st.button("Delete Selected"):
+                st.session_state.data = st.session_state.data.drop(index=selected_indices).reset_index(drop=True)
+                st.rerun()
 
 c1, c2 = st.columns([1,1])
+
+###### RELEASE POINT CHART
+
 with c1:
 
     fig3 = go.Figure()
@@ -196,15 +209,81 @@ with c1:
     if event3 and event3.selection and event3.selection.points:
         selected_indices = [int(pt["customdata"]) for pt in event3.selection.points]
         
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Apply Change"):
+                for idx in selected_indices:
+                    st.session_state.data.at[idx, "TaggedPitchType"] = new_type
+                st.rerun()
+        with col2:
+            if st.button("Delete Selected"):
+                st.session_state.data = st.session_state.data.drop(index=selected_indices).reset_index(drop=True)
+                st.rerun()
+
+###### PITCH LOCATION CHART
+    
+with c2:
+
+    fig4 = go.Figure()
+    for pitch, group in df.groupby("TaggedPitchType"):
+        fig4.add_trace(go.Scatter(
+            x=group["PlateLocSide"],
+            y=group["PlateLocHeight"],
+            mode="markers",
+            name=pitch,
+            marker=dict(size=10, color=colors.get(pitch, "black"), line=dict(color="white", width=0.5)),
+            customdata=group.index.tolist(),
+        ))
+
+    fig4.update_layout(
+        title="Pitch Location Chart",
+        xaxis_title="Plate Location Side (ft)",
+        yaxis_title="Plate Location Height (ft)",
+        width=600,
+        height=600,
+        xaxis=dict(range=[-3, 3], showgrid=False, zeroline=False, zerolinecolor="black", zerolinewidth=2),
+        yaxis=dict(range=[-1, 6], showgrid=False, zeroline=False, zerolinecolor="black", zerolinewidth=2),
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        margin=dict(l=20, r=20, t=40, b=20),
+        shapes=[
+            dict(
+                type="rect",
+                xref="paper", yref="paper",
+                x0=0, y0=0, x1=1, y1=1,
+                line=dict(color="black", width=1)
+            )
+        ]
+    )
+
+    fig4.add_shape(type="line", x0=-0.75, x1=-0.75, y0=1.65, y1=3.65, line=dict(color="black", width=2))
+    fig4.add_shape(type="line", x0=0.75, x1=0.75, y0=1.65, y1=3.65, line=dict(color="black", width=2))
+    fig4.add_shape(type="line", x0=-0.25, x1=-0.25, y0=1.65, y1=3.65, line=dict(color="black", width=1))
+    fig4.add_shape(type="line", x0=0.25, x1=0.25, y0=1.65, y1=3.65, line=dict(color="black", width=1))
+    fig4.add_shape(type="line", x0=-0.75, x1=0.75, y0=3.65, y1=3.65, line=dict(color="black", width=2))
+    fig4.add_shape(type="line", x0=-0.75, x1=0.75, y0=1.65, y1=1.65, line=dict(color="black", width=2))
+    fig4.add_shape(type="line", x0=-0.75, x1=0.75, y0=2.32, y1=2.32, line=dict(color="black", width=1))
+    fig4.add_shape(type="line", x0=-0.75, x1=0.75, y0=2.99, y1=2.99, line=dict(color="black", width=1))
+
+    event4 = st.plotly_chart(fig4, on_select="rerun", key="loc_plot")
+
+    if event4 and event4.selection and event4.selection.points:
+        selected_indices = [int(pt["customdata"]) for pt in event4.selection.points]
+        
         st.markdown(f"**{len(selected_indices)} pitches selected**")
         
         new_type = st.selectbox("Reclassify all selected as:", pitch_types)
         
-        if st.button("Apply Change"):
-            for idx in selected_indices:
-                st.session_state.data.at[idx, "TaggedPitchType"] = new_type
-            st.success(f"{len(selected_indices)} pitches reclassified to **{new_type}**!")
-            st.rerun()
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Apply Change"):
+                for idx in selected_indices:
+                    st.session_state.data.at[idx, "TaggedPitchType"] = new_type
+                st.rerun()
+        with col2:
+            if st.button("Delete Selected"):
+                st.session_state.data = st.session_state.data.drop(index=selected_indices).reset_index(drop=True)
+                st.rerun()
 
 ############## STUFF PLUS TABLE
 
