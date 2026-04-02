@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import glob
 
+stolen_bases_against = pd.read_csv("data/Baserunning.csv")
 fall = pd.read_csv("data/Fall25Scrim(updated).csv")
 spring = pd.read_csv("data/Spring26Scrim(updated).csv")
 season = pd.concat([pd.read_csv(f) for f in glob.glob("data/26Season/*.csv")], ignore_index=True)
@@ -151,7 +152,21 @@ def move_column(df, colname, position):
 
 df_uri = df[df["PitcherTeam"] == "RHO_RAM"]
 
+# merge stolen bases into dfp
+keep_cols = ['playerFullName', 'SB']
+stolen_bases_against = stolen_bases_against[keep_cols]
+stolen_bases_against['playerFullName'] = stolen_bases_against['playerFullName'].apply(lambda x: f"{x.split()[1]}, {x.split()[0]}")
+
+stolen_bases_against = stolen_bases_against.rename(columns={'playerFullName': 'Pitcher'})
+
+stolen_bases_against['Pitcher'] = stolen_bases_against['Pitcher'].replace('Sabbath, Joseph', 'Sabbath, Joe')
+
+stolen_bases_against['Pitcher'] = stolen_bases_against['Pitcher'].replace('Fletcher, Nate', 'Fletcher, Nathan')
+
 dfp = uri_pitchers_report(df_uri)
+
+if "Regular Season" in selections or selections == []:
+    dfp = dfp.merge(stolen_bases_against, on='Pitcher', how='left')
 
 dfps = dfp.sort_values("Pitcher", ascending=True)
 
