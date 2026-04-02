@@ -165,7 +165,7 @@ stolen_bases_against['Pitcher'] = stolen_bases_against['Pitcher'].replace('Fletc
 
 dfp = uri_pitchers_report(df_uri)
 
-if "Regular Season" in selections:
+if "Regular Season" in selections or selections == []:
     dfp = dfp.merge(stolen_bases_against, on='Pitcher', how='left')
 
 dfps = dfp.sort_values("Pitcher", ascending=True)
