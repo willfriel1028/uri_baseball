@@ -139,25 +139,16 @@ def pitch_outcome(df, OUTCOME_ORDER):
     st.pyplot(fig)
     
 def get_outcome(df):
-    
-    df["Outcome"] = ["" for _ in range(len(df))]
-    
-    for i in range(0, len(df)):
-        if df["PitchCall"].iloc[i] == "StrikeCalled":
-            df["Outcome"].iloc[i] = "Strike Called"
-        elif df["PitchCall"].iloc[i] == "StrikeSwinging":
-            df["Outcome"].iloc[i] = "Strike Swinging"
-        elif df["PitchCall"].iloc[i] == "BallCalled":
-            df["Outcome"].iloc[i] = "Ball Called"
-        elif df["PitchCall"].iloc[i] == "HitByPitch":
-            df["Outcome"].iloc[i] = "HBP"
-        elif df["PitchCall"].iloc[i] == "InPlay":
-            df["Outcome"].iloc[i] = "In Play"
-        elif df["PitchCall"].iloc[i] == "FoulBallNotFieldable":
-            df["Outcome"].iloc[i] = "Foul Ball Not Fieldable"
-        else:
-            df["Outcome"].iloc[i] = "Other"
-    return df   
+    outcome_map = {
+        "StrikeCalled": "Strike Called",
+        "StrikeSwinging": "Strike Swinging",
+        "BallCalled": "Ball Called",
+        "HitByPitch": "HBP",
+        "InPlay": "In Play",
+        "FoulBallNotFieldable": "Foul Ball Not Fieldable",
+    }
+    df["Outcome"] = df["PitchCall"].map(outcome_map).fillna("Other")
+    return df
 
 fall = pd.read_csv("data/Fall25Scrim(updated).csv")
 spring = pd.read_csv("data/Spring26Scrim(updated).csv")
