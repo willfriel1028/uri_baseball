@@ -211,14 +211,10 @@ with c1:
         
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("Apply Change"):
-                for idx in selected_indices:
-                    st.session_state.data.at[idx, "TaggedPitchType"] = new_type
-                st.rerun()
-        with col2:
             if st.button("Delete Selected"):
                 st.session_state.data = st.session_state.data.drop(index=selected_indices).reset_index(drop=True)
                 st.rerun()
+        
 
 ###### PITCH LOCATION CHART
     
@@ -349,6 +345,8 @@ for pitch in list(df["TaggedPitchType"].unique()):
     f["Avg Velo"] = round(x["RelSpeed"].mean(), 1)
     f["IVB"] = round(x["InducedVertBreak"].mean(), 1)
     f["HB"] = round(x["HorzBreak"].mean(), 1)
+    f["VAA"] = round(x["VertApprAngle"].mean(), 1)
+    f["HAA"] = round(x["HorzApprAngle"].mean(), 1)
     f["Horz Rel"] = round(x["RelSide"].mean(), 1)
     f["Vert Rel"] = round(x["RelHeight"].mean(), 1)
     f["Spin Rate"] = int(x["SpinRate"].mean())
