@@ -10,7 +10,7 @@ st.set_page_config(layout="wide")
 
 files = st.file_uploader("Import Trackman file", type="csv", accept_multiple_files=True)
 
-if st.button("Clear Data"):
+if st.button("Refresh"):
     del st.session_state.data
     st.session_state.file_key = st.session_state.get("file_key", 0) + 1 
     st.rerun()
