@@ -25,6 +25,17 @@ else:
     
 df["Pitcher"] = df["Pitcher"].replace("Grotyohann, Connor ", "Grotyohann, Connor")
 
+# clean stolen bases
+keep_cols = ['playerFullName', 'SB']
+stolen_bases_against = stolen_bases_against[keep_cols]
+stolen_bases_against['playerFullName'] = stolen_bases_against['playerFullName'].apply(lambda x: f"{x.split()[1]}, {x.split()[0]}")
+
+stolen_bases_against = stolen_bases_against.rename(columns={'playerFullName': 'Pitcher'})
+
+stolen_bases_against['Pitcher'] = stolen_bases_against['Pitcher'].replace('Sabbath, Joseph', 'Sabbath, Joe')
+
+stolen_bases_against['Pitcher'] = stolen_bases_against['Pitcher'].replace('Fletcher, Nate', 'Fletcher, Nathan')
+
 def uri_pitchers_report(df):
     
     names = list(df["Pitcher"].unique())
@@ -38,13 +49,22 @@ def uri_pitchers_report(df):
         dfs.append(df_pitcher)
         
     final_df = pd.DataFrame(dfs).reset_index(drop=True)
-    
+
     drop = ["HBP", "Strikes", "Strike%", "TotalPitches", "BF", "HR", "CalledStrikes", "Whiffs"]
     final_df = final_df.drop(drop, axis=1)
-    
+
+    # merge sb into final_df
+    if "Regular Season" in selections or selections == []:
+        final_df = final_df.merge(stolen_bases_against, on='Pitcher', how='left')
+        final_df["Total-"] = final_df["Total-"] + final_df["SB"]
+        final_df["CompetitionScore"] = final_df["CompetitionScore"] - final_df["SB"]
+        final_df["CompetitionScore/IP"] = round(final_df["CompetitionScore"] / final_df["IP"], 2)
+        final_df["CompetitionScore/IP"] = final_df["CompetitionScore/IP"].replace([np.inf, -np.inf], np.nan)
+        final_df["CompetitionScore/IP"] = final_df["CompetitionScore/IP"].fillna(0)
+        
     mean_score = final_df["CompetitionScore/IP"].mean()
     std_score = final_df["CompetitionScore/IP"].std()
-    
+
     final_df["DominantScore"] = round((final_df["CompetitionScore/IP"] - mean_score) / std_score, 2)
     
     final_df = move_column(final_df, "CompetitionScore", 1)
@@ -152,21 +172,7 @@ def move_column(df, colname, position):
 
 df_uri = df[df["PitcherTeam"] == "RHO_RAM"]
 
-# merge stolen bases into dfp
-keep_cols = ['playerFullName', 'SB']
-stolen_bases_against = stolen_bases_against[keep_cols]
-stolen_bases_against['playerFullName'] = stolen_bases_against['playerFullName'].apply(lambda x: f"{x.split()[1]}, {x.split()[0]}")
-
-stolen_bases_against = stolen_bases_against.rename(columns={'playerFullName': 'Pitcher'})
-
-stolen_bases_against['Pitcher'] = stolen_bases_against['Pitcher'].replace('Sabbath, Joseph', 'Sabbath, Joe')
-
-stolen_bases_against['Pitcher'] = stolen_bases_against['Pitcher'].replace('Fletcher, Nate', 'Fletcher, Nathan')
-
 dfp = uri_pitchers_report(df_uri)
-
-if "Regular Season" in selections or selections == []:
-    dfp = dfp.merge(stolen_bases_against, on='Pitcher', how='left')
 
 dfps = dfp.sort_values("Pitcher", ascending=True)
 
