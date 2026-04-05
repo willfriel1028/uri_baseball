@@ -391,7 +391,12 @@ for pitch in pitches:
     xz = x[zone]
     xs = x[swing]
     xcsw = x[csw]
-    xc = x[x["ExitSpeed"].notna()]
+    contact = (
+            (x["PitchCall"] == "InPlay") |
+            (x["PitchCall"] == "FoulBallNotFieldable") |
+            (x["PitchCall"] == "FoulBallFieldable")
+        )
+    xc = x[contact]
     
     dfx["PitchType"] = pitch
     dfx["Strikes"] = len(x[(x["PitchCall"] == "StrikeCalled") | (x["PitchCall"] == "StrikeSwinging") | (x["PitchCall"] == "FoulBallNotFieldable") | (x["PitchCall"] == "InPlay")])
@@ -405,7 +410,7 @@ for pitch in pitches:
             dfx["Contact %"] = np.nan
         dfx["CS %"] = round(((len(x[x["PitchCall"] == "StrikeCalled"]) / len(x)) * 100), 1)
         if len(xs) != 0:
-            dfx["Whiff %"] = round(((len(x[x["PitchCall"] == "StrikeSwinging"]) / len(xs)) * 100), 1)
+            dfx["Whiff %"] = round(((len(xs[xs["PitchCall"] == "StrikeSwinging"]) / len(xs)) * 100), 1)
         else:
             dfx["Whiff %"] = np.nan
         dfx["CSW %"] = dfx["CS %"] + dfx["Whiff %"]
