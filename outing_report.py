@@ -8,6 +8,18 @@ MODELS_CACHE = {}
 
 st.set_page_config(layout="wide")
 
+st.markdown(
+    """
+    <style>
+    html, body, [class*="stAppViewContainer"], [class*="main"], [class*="block-container"] {
+        height: 100%;
+        overflow: auto !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 files = st.file_uploader("Import Trackman file", type="csv", accept_multiple_files=True)
 
 if st.button("Refresh"):
