@@ -492,9 +492,9 @@ stats["LeadoffOn"] = len(leadoff[(leadoff["KorBB"] == "Walk") | (leadoff["PlayRe
 stats["CompetitionScore"] = stats["0-2 or 1-2"] + stats["K"] + stats["4PitchesOrLess"] + stats["IPw/0s"] + stats["LeadoffOut"] + (2 * stats["123"]) - stats["BB"] - stats["Runs"] - stats["Hits"] - stats["HBP"] - stats["LeadoffOn"]
 
 if stats["IP"] != 0:
-    stats["CompetitionScore/IP"] = round(stats["CompetitionScore"] / stats["IP"], 2)
+    stats["CompScore/IP"] = round(stats["CompetitionScore"] / stats["IP"], 2)
 elif stats["IP"] == 0:
-    stats["CompetitionScore/IP"] = np.nan
+    stats["CompScore/IP"] = np.nan
 
 st.dataframe(pd.DataFrame([stats]), hide_index=True, use_container_width=True, height=(len(pd.DataFrame([stats])) + 1) * 35 + 3)
     
