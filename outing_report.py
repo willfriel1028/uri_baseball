@@ -74,7 +74,7 @@ with c2:
         xaxis_title="Horizontal Break (in)",
         yaxis_title="Induced Vertical Break (in)",
         width=100,
-        height=800,
+        height=500,
         xaxis=dict(range=[-30, 30], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
         yaxis=dict(range=[-30, 30], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
         plot_bgcolor="white",
