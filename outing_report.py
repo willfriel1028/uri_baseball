@@ -122,10 +122,59 @@ with c2:
                 st.session_state.data = st.session_state.data.drop(index=selected_indices).reset_index(drop=True)
                 st.rerun()
 
-###### SPEED / SPIN CHART
-    
+###### RELEASE POINT CHART
+
 with c1:
-    
+
+    fig3 = go.Figure()
+    for pitch, group in df.groupby("TaggedPitchType"):
+        fig3.add_trace(go.Scatter(
+            x=group["RelSidei"],
+            y=group["RelHeighti"],
+            mode="markers",
+            name=pitch,
+            marker=dict(size=10, color=colors.get(pitch, "black"), line=dict(color="white", width=0.5)),
+            customdata=group.index.tolist(),
+        ))
+
+    fig3.update_layout(
+        title="Release Point Chart",
+        xaxis_title="Release Side (in)",
+        yaxis_title="Release Height (in)",
+        width=10,
+        height=450,
+        xaxis=dict(range=[-48, 48], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
+        yaxis=dict(range=[0, 96], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        margin=dict(l=20, r=20, t=40, b=20),
+        shapes=[
+            dict(
+                type="rect",
+                xref="paper", yref="paper",
+                x0=0, y0=0, x1=1, y1=1,
+                line=dict(color="black", width=1)
+            )
+        ]
+    )
+
+    event3 = st.plotly_chart(fig3, on_select="rerun", key="rel_plot")
+
+    if event3 and event3.selection and event3.selection.points:
+        selected_indices = [int(pt["customdata"]) for pt in event3.selection.points]
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Delete Selected"):
+                st.session_state.data = st.session_state.data.drop(index=selected_indices).reset_index(drop=True)
+                st.rerun()
+
+c1, c2 = st.columns([1,1])
+
+###### SPPED / SPIN CHART
+
+with c1:
+
     fig2 = go.Figure()
     for pitch, group in df.groupby("TaggedPitchType"):
         fig2.add_trace(go.Scatter(
@@ -174,55 +223,6 @@ with c1:
                     st.session_state.data.at[idx, "TaggedPitchType"] = new_type
                 st.rerun()
         with col2:
-            if st.button("Delete Selected"):
-                st.session_state.data = st.session_state.data.drop(index=selected_indices).reset_index(drop=True)
-                st.rerun()
-
-c1, c2 = st.columns([1,1])
-
-###### RELEASE POINT CHART
-
-with c1:
-
-    fig3 = go.Figure()
-    for pitch, group in df.groupby("TaggedPitchType"):
-        fig3.add_trace(go.Scatter(
-            x=group["RelSidei"],
-            y=group["RelHeighti"],
-            mode="markers",
-            name=pitch,
-            marker=dict(size=10, color=colors.get(pitch, "black"), line=dict(color="white", width=0.5)),
-            customdata=group.index.tolist(),
-        ))
-
-    fig3.update_layout(
-        title="Release Point Chart",
-        xaxis_title="Release Side (in)",
-        yaxis_title="Release Height (in)",
-        width=10,
-        height=450,
-        xaxis=dict(range=[-48, 48], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
-        yaxis=dict(range=[0, 96], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
-        plot_bgcolor="white",
-        paper_bgcolor="white",
-        margin=dict(l=20, r=20, t=40, b=20),
-        shapes=[
-            dict(
-                type="rect",
-                xref="paper", yref="paper",
-                x0=0, y0=0, x1=1, y1=1,
-                line=dict(color="black", width=1)
-            )
-        ]
-    )
-
-    event3 = st.plotly_chart(fig3, on_select="rerun", key="rel_plot")
-
-    if event3 and event3.selection and event3.selection.points:
-        selected_indices = [int(pt["customdata"]) for pt in event3.selection.points]
-        
-        col1, col2 = st.columns(2)
-        with col1:
             if st.button("Delete Selected"):
                 st.session_state.data = st.session_state.data.drop(index=selected_indices).reset_index(drop=True)
                 st.rerun()
