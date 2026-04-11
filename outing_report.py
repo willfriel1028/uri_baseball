@@ -299,7 +299,7 @@ st.header("Stuff Table")
 
 def pred_rv(test, features, target, pitch, side):
     if (pitch, side) not in MODELS_CACHE:
-        with open(f'stuff+/models/25_{pitch}_{side}.pkl', 'rb') as f:
+        with open(f'stuff+/models/26_{pitch}_{side}.pkl', 'rb') as f:
             MODELS_CACHE[(pitch, side)] = pickle.load(f)
 
     model = MODELS_CACHE[(pitch, side)]
@@ -331,7 +331,7 @@ for pitch in list(df["TaggedPitchType"].unique()):
     dfx["extension"] = x["Extension"].mean()
     
     side = dfx["PitcherThrows"]
-    features = ['vertApprAngle', 'inducedVertBreak', 'horzBreak', 'horzApprAngle', 'extension', 'relX', 'relZ', 'releaseVelocity', 'spinRate', 'spinDir']
+    features = ['inducedVertBreak', 'horzBreak', 'extension', 'relX', 'relZ', 'releaseVelocity', 'spinRate']
     target = ["rv"]
     
     dfz = pd.DataFrame([dfx], columns=features) 
