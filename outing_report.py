@@ -321,14 +321,14 @@ for pitch in list(df["TaggedPitchType"].unique()):
     dfx["Count"] = len(x)
     dfx["vertApprAngle"] = x["VertApprAngle"].mean()
     dfx["horzApprAngle"] = x["HorzApprAngle"].mean()
-    dfx["releaseVelocity"] = x["RelSpeed"].mean()
-    dfx["inducedVertBreak"] = x["InducedVertBreak"].mean()
-    dfx["horzBreak"] = x["HorzBreak"].mean()
-    dfx["relX"] = -x["RelSide"].mean()
-    dfx["relZ"] = x["RelHeight"].mean()
-    dfx["spinRate"] = x["SpinRate"].mean()
+    dfx["releaseVelocity"] = round(x["RelSpeed"].mean(), 1)
+    dfx["inducedVertBreak"] = round(x["InducedVertBreak"].mean(), 1)
+    dfx["horzBreak"] = round(x["HorzBreak"].mean(), 1)
+    dfx["relX"] = round(-x["RelSide"].mean(), 1)
+    dfx["relZ"] = round(x["RelHeight"].mean(), 1)
+    dfx["spinRate"] = int(x["SpinRate"].mean())
     dfx["spinDir"] = x["SpinAxis"].mean()
-    dfx["extension"] = x["Extension"].mean()
+    dfx["extension"] = round(x["Extension"].mean(), 1)
     
     side = dfx["PitcherThrows"]
     features = ['inducedVertBreak', 'horzBreak', 'extension', 'relX', 'relZ', 'releaseVelocity', 'spinRate']
