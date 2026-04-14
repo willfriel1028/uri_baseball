@@ -88,7 +88,10 @@ def batters_stats_report(df, pitches):
     dfx["3B"] = len(df[df["PlayResult"] == "Triple"])
     dfx["HR"] = len(df[df["PlayResult"] == "HomeRun"])
     dfx["TB"] = dfx["1B"] + (2 * dfx["2B"]) + (3 * dfx["3B"]) + (4 * dfx["HR"])
-    dfx["SLG"] = round(dfx["TB"] / dfx["AB"], 3)
+    if dfx["AB"] != 0:
+        dfx["SLG"] = round(dfx["TB"] / dfx["AB"], 3)
+    else:
+        dfx["SLG"] = np.nan
     dfx["OPS"] = dfx["OBP"] + dfx["SLG"]
     dfx["XBH"] = dfx["2B"] + dfx["3B"] + dfx["HR"]
     dfx["K"] = len(df[df["KorBB"] == "Strikeout"])
