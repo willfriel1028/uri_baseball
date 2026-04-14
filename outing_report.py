@@ -326,7 +326,7 @@ for pitch in list(df["TaggedPitchType"].unique()):
     dfx["horzBreak"] = round(x["HorzBreak"].mean(), 1)
     dfx["relX"] = round(-x["RelSide"].mean(), 1)
     dfx["relZ"] = round(x["RelHeight"].mean(), 1)
-    dfx["spinRate"] = int(x["SpinRate"].mean())
+    dfx["spinRate"] = round(x["SpinRate"].mean())
     dfx["spinDir"] = x["SpinAxis"].mean()
     dfx["extension"] = round(x["Extension"].mean(), 1)
     
@@ -361,7 +361,7 @@ for pitch in list(df["TaggedPitchType"].unique()):
     f["HAA"] = round(x["HorzApprAngle"].mean(), 1)
     f["Horz Rel"] = round(x["RelSide"].mean(), 1)
     f["Vert Rel"] = round(x["RelHeight"].mean(), 1)
-    f["Spin Rate"] = int(x["SpinRate"].mean())
+    f["Spin Rate"] = round(x["SpinRate"].mean())
     f["Extension"] = round(x["Extension"].mean(), 1)
     f["Stuff+"] = round(stuff_plus)
     
