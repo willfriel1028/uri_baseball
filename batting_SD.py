@@ -105,7 +105,10 @@ def batters_stats_report(df, pitches):
     dfx["Correct_Decisions"] = dfx["SwingAtStrike"] + dfx["BallTaken"]
     dfx["Incorrect_Decisions"] = dfx["StrikeTaken"] + dfx["SwingAtBall"]
     dfx["Correct%"] = round((dfx["Correct_Decisions"] / dfx["Pitches"]) * 100, 1)
-    dfx["Score/PA"] = round(dfx["Score"] / dfx["PA"], 2)
+    if dfx["PA"] != 0:
+        dfx["Score/PA"] = round(dfx["Score"] / dfx["PA"], 2)
+    else:
+        dfx["Score/PA"] = np.nan
                
     return dfx
 

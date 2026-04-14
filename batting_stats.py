@@ -75,7 +75,10 @@ def batters_stats_report(df, pitches):
     dfx["Hits"] = len(df[(df["PlayResult"] == "Single") | (df["PlayResult"] == "Double") | (df["PlayResult"] == "Triple") | (df["PlayResult"] == "HomeRun")])
     dfx["BB"] = len(df[df["KorBB"] == "Walk"])
     dfx["HBP"] = len(df[df["PitchCall"] == "HitByPitch"])
-    dfx["AVG"] = round(dfx["Hits"] / dfx["AB"], 3)
+    if dfx["AB"] != 0:
+        dfx["AVG"] = round(dfx["Hits"] / dfx["AB"], 3)
+    else:
+        dfx["AVG"] = np.nan
     dfx["OBP"] = round((dfx["Hits"] + dfx["BB"] +  dfx["HBP"]) / dfx["PA"], 3)
     dfx["1B"] = len(df[df["PlayResult"] == "Single"])
     dfx["2B"] = len(df[df["PlayResult"] == "Double"])
