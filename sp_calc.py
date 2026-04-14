@@ -32,7 +32,7 @@ with c1:
     velo = st.number_input("Release Velocity", value=None, step=0.1)
     ivb = st.number_input("Induced Vertical Break (in)", value=None, step=0.1)
     hb = st.number_input("Horizontal Break (in)", value=None, step=0.1)
-    spin = st.number_input("Spin Rate", value=None, step=0.1)
+    spin = st.number_input("Spin Rate", value=None, step=1)
     relx = st.number_input("Release Side (ft)", value=None, step=0.1)
     relz = st.number_input("Release Height (ft)", value=None, step=0.1)
     ext = st.number_input("Extension (ft)", value=None, step=0.1)
@@ -69,7 +69,7 @@ def pred_sp(test, features, target, pitch, side, stuff):
     stuff_plus = 100 + (-10 * (xrv - pop_mean) / pop_std)
     return pd.Series(stuff_plus, index=test.index)
 
-def generate_movement_grid(pitcher_row, steps=600):
+def generate_movement_grid(pitcher_row, steps=60):
     ivb_range = np.linspace(-30, 30, steps)
     hb_range = np.linspace(-30, 30, steps)
     hb_grid, ivb_grid = np.meshgrid(hb_range, ivb_range)
