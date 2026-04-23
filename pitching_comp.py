@@ -6,6 +6,7 @@ import streamlit as st
 import glob
 
 stolen_bases_against = pd.read_csv("data/Baserunning.csv")
+inherited_runners = pd.read_csv("data/inherited_runners.csv")
 fall = pd.read_csv("data/Fall25Scrim(updated).csv")
 spring = pd.read_csv("data/Spring26Scrim(updated).csv")
 season = pd.concat([pd.read_csv(f) for f in glob.glob("data/26Season/*.csv")], ignore_index=True)
@@ -22,7 +23,7 @@ elif selections == ["Regular Season", "Fall Scrimmages"]:
     df = pd.concat([fall, season])
 else:
     df = season
-    
+
 df["Pitcher"] = df["Pitcher"].replace("Grotyohann, Connor ", "Grotyohann, Connor")
 
 # clean stolen bases
@@ -35,6 +36,20 @@ stolen_bases_against = stolen_bases_against.rename(columns={'playerFullName': 'P
 stolen_bases_against['Pitcher'] = stolen_bases_against['Pitcher'].replace('Sabbath, Joseph', 'Sabbath, Joe')
 
 stolen_bases_against['Pitcher'] = stolen_bases_against['Pitcher'].replace('Fletcher, Nate', 'Fletcher, Nathan')
+
+# clean inherited runners
+keep_cols_IR = ['playerFullName', 'IS', 'IR']
+inherited_runners = inherited_runners[keep_cols_IR]
+inherited_runners['playerFullName'] = inherited_runners['playerFullName'].apply(lambda x: f"{x.split()[1]}, {x.split()[0]}")
+
+inherited_runners = inherited_runners.rename(columns={'playerFullName': 'Pitcher'})
+
+inherited_runners['Pitcher'] = inherited_runners['Pitcher'].replace('Sabbath, Joseph', 'Sabbath, Joe')
+
+inherited_runners['Pitcher'] = inherited_runners['Pitcher'].replace('Fletcher, Nate', 'Fletcher, Nathan')
+
+# IRDNS = inherited runners did not score 
+inherited_runners['IRDNS'] = inherited_runners['IR'] - inherited_runners['IS']
 
 def uri_pitchers_report(df):
     
@@ -53,11 +68,14 @@ def uri_pitchers_report(df):
     drop = ["HBP", "Strikes", "Strike%", "TotalPitches", "BF", "HR", "CalledStrikes", "Whiffs"]
     final_df = final_df.drop(drop, axis=1)
 
-    # merge sb into final_df
+    # merge sb and ir into final_df
     if "Regular Season" in selections or selections == []:
         final_df = final_df.merge(stolen_bases_against, on='Pitcher', how='left')
+        final_df = final_df.merge(inherited_runners, on='Pitcher', how='left')
         final_df["Total-"] = final_df["Total-"] + final_df["SB"]
+        final_df["Total-"] = final_df["Total-"] - final_df["IRDNS"]
         final_df["CompetitionScore"] = final_df["CompetitionScore"] - final_df["SB"]
+        final_df["CompetitionScore"] = final_df["CompetitionScore"] + final_df["IRDNS"]
         final_df["CompetitionScore/IP"] = round(final_df["CompetitionScore"] / final_df["IP"], 2)
         final_df["CompetitionScore/IP"] = final_df["CompetitionScore/IP"].replace([np.inf, -np.inf], np.nan)
         final_df["CompetitionScore/IP"] = final_df["CompetitionScore/IP"].fillna(0)
@@ -179,7 +197,7 @@ dfps = dfp.sort_values("Pitcher", ascending=True)
 #def highlight_domscore(val):
     #return "background-color: lightblue"  # or "color: red" for text
 
-#styled = dfps.style.applymap(highlight_domscore, subset=["DominantScore"])
+# styled = dfps.style.applymap(highlight_domscore, subset=["DominantScore"])
 
 col1, col2 = st.columns([1,1])
 with col1:
