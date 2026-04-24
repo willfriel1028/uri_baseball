@@ -68,7 +68,7 @@ with c2:
     df = df[df["TaggedPitchType"].isin(pitch_types)]
 
     colors = {"FA": "red", "SL": "blue", "CU": "green", "CH": "orange",
-              "SI": "yellow", "FC": "gray", "FS": "purple"}
+              "SI": "brown", "FC": "gray", "FS": "purple"}
 
     fig1 = go.Figure()
     for pitch, group in df.groupby("TaggedPitchType"):
