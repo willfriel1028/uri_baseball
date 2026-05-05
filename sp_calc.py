@@ -25,7 +25,7 @@ st.header("Stuff+ Calculator")
 
 c1, c2, c3, c4 = st.columns([2, 1, 4, 1])
 with c1:
-    pitches = ["FA", "SL", "CH", "CU", "FC", "SI", "FS"]
+    pitches = ["FA", "SL", "CH", "CB", "CT", "SI", "SPLT"]
     pitch = st.selectbox("Pitch Type", options=pitches)
     sides = ["R", "L"]
     side = st.selectbox("Pitcher Hand", options=sides)
