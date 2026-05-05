@@ -15,7 +15,7 @@ teams.remove("URI")
 teams.insert(0, "URI")
 teams.insert(0, "TOTAL")
 
-counts = (1, 50, 100, 250, 500)
+counts = (25, 100, 250, 500, 750)
 
 c1,c2,c3 = st.columns([1,1,3])
 with c1:
