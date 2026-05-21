@@ -79,7 +79,7 @@ with c2:
             y=group["InducedVertBreak"],
             mode="markers",
             name=pitch,
-            marker=dict(size=10, color=colors.get(pitch, "black")),
+            marker=dict(size=8, color=colors.get(pitch, "black")),
             customdata=group.index.tolist(),
         ))
 
@@ -135,7 +135,7 @@ with c1:
             y=group["RelHeighti"],
             mode="markers",
             name=pitch,
-            marker=dict(size=10, color=colors.get(pitch, "black"), line=dict(color="white", width=0.5)),
+            marker=dict(size=8, color=colors.get(pitch, "black"), line=dict(color="white", width=0.5)),
             customdata=group.index.tolist(),
         ))
 
@@ -182,7 +182,7 @@ with c3:
             y=group["PlateLocHeight"],
             mode="markers",
             name=pitch,
-            marker=dict(size=10, color=colors.get(pitch, "black"), line=dict(color="white", width=0.5)),
+            marker=dict(size=8, color=colors.get(pitch, "black"), line=dict(color="white", width=0.5)),
             customdata=group.index.tolist(),
         ))
 
@@ -249,7 +249,7 @@ with co2:
             y=group["RelSpeed"],
             mode="markers",
             name=pitch,
-            marker=dict(size=10, color=colors.get(pitch, "black")),
+            marker=dict(size=8, color=colors.get(pitch, "black")),
             customdata=group.index.tolist(),
         ))
 
@@ -378,7 +378,7 @@ with co4:
         y=df_p["InducedVertBreak"],
         mode="markers",
         marker=dict(
-            size=10,
+            size=8,
             color=df_p["Stuff+"],        
             colorscale="RdYlGn",         
             cmin=70,                     
