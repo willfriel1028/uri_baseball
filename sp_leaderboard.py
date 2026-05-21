@@ -9,13 +9,13 @@ del table["Unnamed: 0"]
 table.rename(columns={"Stf+ CU": "Stf+ CB", "Stf+ FC": "Stf+ CT", "Total": "# Pitches", "Stf+ FS": "Stf+ SPLT"}, inplace=True)
 table.drop(columns="pitcherId", inplace=True)
 
-teams = list(table["Team"].unique())
+teams = list(table["team"].unique())
 teams.sort()
 teams.remove("URI")
 teams.insert(0, "URI")
 teams.insert(0, "TOTAL")
 
-counts = (25, 100, 250, 500, 750)
+counts = (25, 100, 250, 500, 750, 1000)
 
 c1,c2,c3 = st.columns([1,1,3])
 with c1:
@@ -24,7 +24,7 @@ with c2:
     count = st.selectbox("Pitch Count Minimum", options=counts)
 
 if team != "TOTAL":
-    frame = table[(table["Team"] == team) & (table["# Pitches"] >= count)].sort_values("Stuff+", ascending=False)
+    frame = table[(table["team"] == team) & (table["# Pitches"] >= count)].sort_values("Stuff+", ascending=False)
     st.dataframe(frame, hide_index=True, use_container_width=True, height=(len(frame) + 1) * 35 + 3)
 if team == "TOTAL":
     frame = table[(table["# Pitches"] >= count)].sort_values("Stuff+", ascending=False)

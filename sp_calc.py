@@ -44,8 +44,7 @@ x["releaseVelocity"] = velo
 x["inducedVertBreak"] = ivb
 x["horzBreak"] = hb
 x["spinRate"] = spin
-if pd.notna(relx):
-    x["relX"] = -relx
+x["relX"] = relx
 x["relZ"] = relz
 x["extension"] = ext
 
