@@ -447,6 +447,7 @@ with g1:
     table["SpinRate"] = round(table["SpinRate"])
     table["Extension"] = round(table["Extension"], 1)
 
+    col = table.pop("Pitch %")
     table.insert(2, "Pitch %", col)
 
     table["Stuff+"] = np.nan
