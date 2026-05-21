@@ -437,7 +437,7 @@ with g1:
     total = table["Count"].sum()
 
     table.rename(columns={"TaggedPitchType": "PitchType"}, inplace=True)
-    table["Pitch %"] = round(table["Count"] / total, 1)
+    table["Pitch %"] = round((table["Count"] / total) * 100, 1)
     table["Max_Velo"] = round(table["Max_Velo"], 1)
     table["Avg_Velo"] = round(table["Avg_Velo"], 1)
     table["IVB"] = round(table["IVB"], 1)
@@ -446,6 +446,8 @@ with g1:
     table["Vert_Rel"] = round(table["Vert_Rel"], 1)
     table["SpinRate"] = round(table["SpinRate"])
     table["Extension"] = round(table["Extension"], 1)
+
+    table.insert(2, "Pitch %", col)
 
     table["Stuff+"] = np.nan
 
