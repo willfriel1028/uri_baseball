@@ -434,7 +434,10 @@ with g1:
         xrv = ("xrv", "mean")
     ).reset_index()
 
+    total = table["Count"].sum()
+
     table.rename(columns={"TaggedPitchType": "PitchType"}, inplace=True)
+    table["Pitch %"] = round(table["Count"] / total, 1)
     table["Max_Velo"] = round(table["Max_Velo"], 1)
     table["Avg_Velo"] = round(table["Avg_Velo"], 1)
     table["IVB"] = round(table["IVB"], 1)
