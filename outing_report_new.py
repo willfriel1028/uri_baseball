@@ -88,7 +88,7 @@ with c2:
         xaxis_title="Horizontal Break (in)",
         yaxis_title="Induced Vertical Break (in)",
         width=100,
-        height=500,
+        height=400,
         xaxis=dict(range=[-30, 30], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
         yaxis=dict(range=[-30, 30], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
         plot_bgcolor="white",
@@ -144,7 +144,7 @@ with c1:
         xaxis_title="Release Side (in)",
         yaxis_title="Release Height (in)",
         width=10,
-        height=500,
+        height=400,
         xaxis=dict(range=[-48, 48], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
         yaxis=dict(range=[0, 96], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
         plot_bgcolor="white",
@@ -191,7 +191,7 @@ with c3:
         xaxis_title="Plate Location Side (ft)",
         yaxis_title="Plate Location Height (ft)",
         width=10,
-        height=500,
+        height=400,
         xaxis=dict(range=[-3, 3], showgrid=False, zeroline=False, zerolinecolor="black", zerolinewidth=2),
         yaxis=dict(range=[-1, 6], showgrid=False, zeroline=False, zerolinecolor="black", zerolinewidth=2),
         plot_bgcolor="white",
@@ -416,7 +416,7 @@ with co4:
 
 ############## STUFF PLUS TABLE
 
-g1,g2 = st.columns([1,1])
+g1,g2 = st.columns([3,1])
 
 with g1:
     st.header("Stuff Table")
@@ -463,7 +463,7 @@ with g1:
 
 ############## PERFORMANCE TABLE
 
-j1,j2 = st.columns([1,1])
+j1,j2 = st.columns([3,1])
 
 with j1:
     st.header("Performance Table")
@@ -540,7 +540,7 @@ with j1:
 
 ############## STATISTICS TABLE
 
-h1,h2 = st.columns([1,1])
+h1,h2 = st.columns([3,1])
 with h1:
     st.header("Competition Table")
 
