@@ -45,6 +45,9 @@ if "data" not in st.session_state:
 # Assigns concatenated csv files to variable
 data = st.session_state.data
 
+# Make pitch tags consistent
+data.loc[data["TaggedPitchType"] == "FourSeamFastBall", "TaggedPitchType"] = "Fastball"
+
 # Remaps pitch type column to match what is used in our modelling (see 'stuff+' folder)
 data["TaggedPitchType"] = data["TaggedPitchType"].replace({
         "Fastball": "FA",
