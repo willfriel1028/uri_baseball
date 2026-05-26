@@ -77,8 +77,8 @@ with x2:
 df = data[data["Pitcher"] == pitcher]
 
 # Filter df so it only includes pitches that we have models developed for
-pitchtypes = ["FA", "SL", "CH", "CU", "FC", "SI", "FS"]
-df = df[df["TaggedPitchType"].isin(pitchtypes)]
+pitch_types = ["FA", "SL", "CH", "CU", "FC", "SI", "FS"]
+df = df[df["TaggedPitchType"].isin(pitch_types)]
 
 # Creating column that converts Release Side/Height to inches, to be used for Release Point Chart
 df["RelSidei"] = df["RelSide"] * 12
