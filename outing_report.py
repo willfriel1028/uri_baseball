@@ -59,6 +59,19 @@ data["TaggedPitchType"] = data["TaggedPitchType"].replace({
         "Splitter": "FS"
     })
 
+def round_df(data):
+    df = data.copy()
+    df["InducedVertBreak"] = round(df["InducedVertBreak"], 1)
+    df["HorzBreak"] = round(df["HorzBreak"], 1)
+    df["Extension"] = round(df["Extension"], 1)
+    df["RelSide"] = round(df["RelSide"], 1)
+    df["RelHeight"] = round(df["RelHeight"], 1)
+    df["RelSpeed"] = round(df["RelSpeed"], 1)
+    df["SpinRate"] = round(df["SpinRate"])
+    return df
+
+data = round_df(data)
+
 ############## INTERACTIVE PITCH CHARTS
 
 # In this section we create and plot all 5 of the interactive pitch charts that appear on the page
