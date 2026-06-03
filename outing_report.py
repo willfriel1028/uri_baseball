@@ -144,7 +144,7 @@ with c2:
         xaxis_title="Horizontal Break (in)",
         yaxis_title="Induced Vertical Break (in)",
 
-        # Adjust size to fit EMBEDDED APP ON WEBSITE
+        # Set size to fit embedded app on website - make sure it appears square
         width=550,
         height=550,
 
@@ -173,9 +173,10 @@ with c2:
         # The selected point(s)
         selected_indices = [int(pt["customdata"]) for pt in event1.selection.points]
 
-        # Present pitch type options for reclassification
+        # Display number of pitches selected
         st.markdown(f"**{len(selected_indices)} pitches selected**")
-        
+
+        # Present pitch type options for reclassification
         new_type = st.selectbox("Reclassify all selected as:", pitch_types)
 
         # Giving users the option to change the pitch type of selected points, or delete them entirely
@@ -224,7 +225,7 @@ with c1:
         xaxis_title="Release Side (in)",
         yaxis_title="Release Height (in)",
 
-        # Set size
+        # Set size to fit embedded app on website - make sure it appears square
         width=550,
         height=550,
 
@@ -289,7 +290,7 @@ with c3:
         xaxis_title="Plate Location Side (ft)",
         yaxis_title="Plate Location Height (ft)",
 
-        # Set size
+        # Set size to fit embedded app on website - make sure it appears square
         width=550,
         height=550,
 
@@ -322,15 +323,18 @@ with c3:
     # Display plot with key "loc_plot"
     event4 = st.plotly_chart(fig4, on_select="rerun", key="loc_plot")
 
-    # When pitches are selected
+    # When pitch(es) are selected
     if event4 and event4.selection and event4.selection.points:
-        selected_indices = [int(pt["customdata"]) for pt in event4.selection.points]
-        
-        st.markdown(f"**{len(selected_indices)} pitches selected**")
-        
-        new_type = st.selectbox("Reclassify all selected as:", pitch_types)
 
         # Give users the option between reassigning pitch types or deleting selected pitches
+        
+        selected_indices = [int(pt["customdata"]) for pt in event4.selection.points]
+
+        st.markdown(f"**{len(selected_indices)} pitches selected**")
+
+        # Present pitch type options for reclassification
+        new_type = st.selectbox("Reclassify all selected as:", pitch_types)
+
         col1, col2 = st.columns(2)
         with col1:
             if st.button("Apply Change"):
@@ -342,29 +346,44 @@ with c3:
                 st.session_state.data = st.session_state.data.drop(index=selected_indices).reset_index(drop=True)
                 st.rerun()
 
+# Align page so our 2 charts will be centered on the screen
 co1, co2, co3, co4, co5 = st.columns([1,3,1,3,1])
 
 ###### SPEED / SPIN CHART
 
+# This will be our speed/spin plot, which will be the plot on the left
+
 with co2:
 
+    # Initialize plot
     fig2 = go.Figure()
     for pitch, group in df.groupby("TaggedPitchType"):
         fig2.add_trace(go.Scatter(
+            # Spin Rate (rpm) on x-axis, Release Speed (mph) on y-axis
             x=group["SpinRate"],
             y=group["RelSpeed"],
             mode="markers",
+
+            # Label each dot as their respective pitch type
             name=pitch,
+
+            # Everything here is identical to previous plots
             marker=dict(size=8, color=colors.get(pitch, "black")),
             customdata=group.index.tolist(),
         ))
 
     fig2.update_layout(
+
+        # Set titles/labels
         title="Speed / Spin Chart",
         xaxis_title="Spin Rate",
         yaxis_title="Release Speed",
+
+        # Customize height to fit embedded app on website - make sure it appears square
         width=550,
         height=550,
+
+        # Set axes, use autorange=True to make it so the plot automatically adjusts to the min/max values on each axis
         xaxis=dict(range=[0, 3000], autorange=True,),
         yaxis=dict(range=[60, 110], autorange=True,),
         plot_bgcolor="white",
@@ -380,15 +399,21 @@ with co2:
         ]
     )
 
+    # Show plot with key "pitch_plot"
     event2 = st.plotly_chart(fig2, on_select="rerun", key="pitch_plot")
 
+    # When pitch(es) are selected
     if event2 and event2.selection and event2.selection.points:
+
+        # Give users the option between reassigning pitch types or deleting selected pitches
+        
         selected_indices = [int(pt["customdata"]) for pt in event2.selection.points]
-        
+
         st.markdown(f"**{len(selected_indices)} pitches selected**")
-        
+
+        # Present pitch type options for reclassification
         new_type = st.selectbox("Reclassify all selected as:", pitch_types)
-        
+
         col1, col2 = st.columns(2)
         with col1:
             if st.button("Apply Change"):
@@ -402,23 +427,39 @@ with co2:
 
 ###### STUFF PLUS PLOT
 
+# Next is our most complicated plot - the Stuff+ Plot on a pitch break chart
+# First, we have to calculate a Stuff+ value for each pitch in our dataframe
+
+# This is our pred_rv function that predicts the expected run value (xrv) of a pitch
 def pred_rv(test, features, target, pitch, side):
     if (pitch, side) not in MODELS_CACHE:
+        # Call in pre-trained model for given pitch type and throwing hand from our stuff+ folder
         with open(f'stuff+/models/26_{pitch}_{side}.pkl', 'rb') as f:
             MODELS_CACHE[(pitch, side)] = pickle.load(f)
 
+    # Define model
     model = MODELS_CACHE[(pitch, side)]
+
+    # Define test values
     X_test = test[features]
+
+    # Predict xrv based on inputted values
     predictions = model.predict(X_test) 
-    
+
+    # Return xrv value as a series
     return pd.Series(predictions, index=test.index)
 
+# Read in our master stuff csv file, created in stuff+/stuff_plus_new.ipynb
 stuff = pd.read_csv("stuff+/stuff.csv")
 
+# Create empty list to store all pitches
 rows = []
 
+# Iterate through every pitch in our dataset
 for index, row in df.iterrows():
 
+    # We need to create a row of a df where the column names align with the names of the columns our model was trained on
+    # Initialize empty dict
     test = {}
     test["inducedVertBreak"] = row["InducedVertBreak"]
     test["horzBreak"] = row["HorzBreak"]
@@ -432,15 +473,19 @@ for index, row in df.iterrows():
         side = "R"
     else:
         side = "L"
-    
+
+    # Define features, target, and pitch type
     features = ['inducedVertBreak', 'horzBreak', 'extension', 'relX', 'relZ', 'releaseVelocity', 'spinRate']
     target = ["rv"]
     pitch = row["TaggedPitchType"]
 
+    # Convert our dict into a 1-row df
     test_df = pd.DataFrame([test], columns=features) 
 
+    # Call our pred_rv function to predict the xrv of this pitch
     test_df["xrv"] = float(pred_rv(test_df, features, target, pitch, side).iloc[0])
 
+    # Add columns to this row that will be used/needed later on in this app, just keep same values from the row we are observing
     test_df["PitchType"] = pitch
     test_df["PitcherThrows"] = side
     test_df["PlateLocSide"] = row["PlateLocSide"]
@@ -457,32 +502,45 @@ for index, row in df.iterrows():
     test_df["Inning"] = row["Inning"]
     test_df["PAofInning"] = row["PAofInning"]
 
+    # Filter stuff so we are observing all qualifying instances of the given pitch type in this row
     stuff_p = stuff[(stuff["PitchType"] == pitch)]
 
+    # Calculate population mean and standard deviation of xrv in this given pitch
     pop_mean = stuff_p["xrv"].mean()
     pop_std = stuff_p["xrv"].std()
 
+    # Calculate Stuff+: 100 = average, every +/- 10 is 1 standard deviation above/below the mean
     test_df["Stuff+"] = 100 + (-10 * (test_df["xrv"] - pop_mean) / pop_std)
 
+    # Append our new row to rows list
     rows.append(test_df)
 
+# Concatenate rows to create a new dataframe, this time with a Stuff+ value of each pitch
 df = pd.concat(rows, ignore_index=True)
 
+# Rename some columns to how they were before (for simplicity)
 df.rename(columns={'inducedVertBreak': 'InducedVertBreak', 'horzBreak': 'HorzBreak', 'extension': 'Extension', 'relX': 'RelSide', 'relZ': 'RelHeight', 'releaseVelocity': 'RelSpeed', 'spinRate': 'SpinRate', 'PitchType': 'TaggedPitchType'}, inplace=True)
 
+# Use middle column for pitch type selection
 with co3:
-    
+
+    # Give user option to select pitch type to display on Stuff+ plot
     pitches = list(df["TaggedPitchType"].unique())
     pitch = st.selectbox("Choose a Pitch", options=pitches)
     df_p = df[df["TaggedPitchType"] == pitch]
 
 with co4:
-    
+
+    # Initialize figure
     fig5 = go.Figure()
     fig5.add_trace(go.Scatter(
+
+        # Horizontal Break (in) on x-axis, Induced Vertical Break (in) on y-axis
         x=df_p["HorzBreak"],
         y=df_p["InducedVertBreak"],
         mode="markers",
+
+        # This dictates the color of each plot, it is based on its Stuff+ value on a red/yellow/green scale. Yellow is average (Stuff+ = 100)
         marker=dict(
             size=8,
             color=df_p["Stuff+"],        
@@ -493,15 +551,23 @@ with co4:
             opacity=1
         ),
         customdata=df_p["Stuff+"].tolist(),
+
+        # Display Stuff+ value of pitch when it is hovered over
         hovertemplate="Stuff+: %{customdata:.0f}<extra></extra>",
     ))
     
     fig5.update_layout(
+
+        # Set titles/labels
         title="Stuff+ On Pitch Break Chart",
         xaxis_title="Horizontal Break (in)",
         yaxis_title="Induced Vertical Break (in)",
+
+        # Adjust size to fit embedded app on website - make sure it appears square
         width=550,
         height=550,
+
+        # Set axes
         xaxis=dict(range=[-30, 30], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
         yaxis=dict(range=[-30, 30], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
         plot_bgcolor="white",
@@ -517,14 +583,24 @@ with co4:
         ]
     )
 
+    # Display plot with key "stuff_plot"
     event5 = st.plotly_chart(fig5, on_select="rerun", key="stuff_plot")
 
+    # NOTE: This plot does not provide users an option to delete pitches or reassign pitch types
+
+
+# It is now time to create our tables that appear below all of the plots
 
 ############## STUFF PLUS TABLE
 
+# We will first create our Stuff table, which displays a variety of metrics for each pitch type that pitcher throws
+
+# Control the size of the table
 g1,g2 = st.columns([3,1])
 
 with g1:
+
+    # Table header
     st.header("Stuff Table")
 
     table = df.groupby("TaggedPitchType").agg(
