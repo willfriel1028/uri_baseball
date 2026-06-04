@@ -619,7 +619,7 @@ g1,g2 = st.columns([3,1])
 with g1:
 
     # Table header
-    st.header("Stuff Table")
+    st.text("STUFF TABLE")
 
     table = df.groupby("TaggedPitchType").agg(
         Count = ("TaggedPitchType", "count"),
@@ -672,7 +672,7 @@ with g1:
 j1,j2 = st.columns([3,1])
 
 with j1:
-    st.header("Performance Table")
+    st.text("PERFORMANCE TABLE")
     pitches = list(df["TaggedPitchType"].unique())
     pitches.append("Total")   
     
@@ -748,7 +748,7 @@ with j1:
 
 h1,h2 = st.columns([3,1])
 with h1:
-    st.header("Competition Table")
+    st.text("COMPETITION TABLE")
 
     stats = {}
     
