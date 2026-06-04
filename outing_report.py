@@ -741,11 +741,11 @@ with g3:
     
         dfn = pd.DataFrame([dfx])
         dff = dfn[["PitchType", "Pitch %", "Strike %", "Zone %", "Swing %", "Contact %", "CS %", "Whiff %", "CSW %", "Avg EV"]]
-        dff = dff.sort_values("Pitch %", ascending=False)
     
         types2.append(dff)
         
     perfs = pd.concat(types2, ignore_index=True)
+    perfs = perfs.sort_values("Pitch %", ascending=False)
     
     st.dataframe(perfs, hide_index=True, use_container_width=True, height=(len(perfs) + 1) * 35 + 3)
 
