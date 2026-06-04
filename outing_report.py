@@ -614,7 +614,7 @@ with co4:
 # We will first create our Stuff table, which displays a variety of metrics for each pitch type that pitcher throws
 
 # Control the size of the table
-g1,g2, g3 = st.columns([15,1,14])
+g1,g2, g3 = st.columns([15,1,13])
 
 with g1:
 
