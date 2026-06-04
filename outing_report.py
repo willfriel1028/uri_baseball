@@ -146,7 +146,8 @@ with c2:
 
         # Set size to fit embedded app on website - make sure it appears square
         width=550,
-        height=550,
+        height=500,
+        autosize=False,
 
         # Set axes
         xaxis=dict(range=[-30, 30], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
@@ -166,7 +167,7 @@ with c2:
 
     # Show the plot on app
     # Every plot has to have its own unique key, this one is "plot1"
-    event1 = st.plotly_chart(fig1, on_select="rerun", key="plot1")
+    event1 = st.plotly_chart(fig1, on_select="rerun", key="plot1", use_container_width=False)
 
     # For when point(s) on the plot are selected
     if event1 and event1.selection and event1.selection.points:
@@ -227,7 +228,8 @@ with c1:
 
         # Set size to fit embedded app on website - make sure it appears square
         width=550,
-        height=550,
+        height=500,
+        autosize=False,
 
         # Set axes range
         xaxis=dict(range=[-48, 48], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
@@ -246,7 +248,7 @@ with c1:
     )
 
     # Show plot with key "rel_plot"
-    event3 = st.plotly_chart(fig3, on_select="rerun", key="rel_plot")
+    event3 = st.plotly_chart(fig3, on_select="rerun", key="rel_plot", use_container_width=False)
 
     # When pitches are selected
     if event3 and event3.selection and event3.selection.points:
@@ -292,7 +294,8 @@ with c3:
 
         # Set size to fit embedded app on website - make sure it appears square
         width=550,
-        height=550,
+        height=500,
+        autosize=False,
 
         # Set axes
         xaxis=dict(range=[-3, 3], showgrid=False, zeroline=False, zerolinecolor="black", zerolinewidth=2),
@@ -321,7 +324,7 @@ with c3:
     fig4.add_shape(type="line", x0=-0.75, x1=0.75, y0=2.99, y1=2.99, line=dict(color="black", width=1))
 
     # Display plot with key "loc_plot"
-    event4 = st.plotly_chart(fig4, on_select="rerun", key="loc_plot")
+    event4 = st.plotly_chart(fig4, on_select="rerun", key="loc_plot", use_container_width=False)
 
     # When pitch(es) are selected
     if event4 and event4.selection and event4.selection.points:
