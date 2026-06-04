@@ -609,12 +609,12 @@ with co4:
 
 # It is now time to create our tables that appear below all of the plots
 
-############## STUFF PLUS TABLE
+############## STUFF TABLE
 
 # We will first create our Stuff table, which displays a variety of metrics for each pitch type that pitcher throws
 
 # Control the size of the table
-g1,g2 = st.columns([1,1])
+g1,g2, g3 = st.columns([15,1,12])
 
 with g1:
 
@@ -664,12 +664,14 @@ with g1:
     table = pd.concat(rows, axis=1, ignore_index=True).T
 
     table.drop(columns=["xrv"], inplace=True)
+
+    table = table.sort_values("Pitch %", ascending=False)
         
     st.dataframe(table, hide_index=True, use_container_width=True, height=(len(table) + 1) * 35 + 3)
 
 ############## PERFORMANCE TABLE
 
-with g2:
+with g3:
     st.text("PERFORMANCE TABLE")
     pitches = list(df["TaggedPitchType"].unique())
     pitches.append("Total")   
@@ -708,6 +710,10 @@ with g2:
         xc = x[contact]
         
         dfx["PitchType"] = pitch
+        if pitch != "Total":
+            dfx["Pitch %"] = round((len(x) / len(df)) * 100, 1)
+        else:
+            dfx["Pitch %"] = np.nan
         dfx["Strikes"] = len(x[(x["PitchCall"] == "StrikeCalled") | (x["PitchCall"] == "StrikeSwinging") | (x["PitchCall"] == "FoulBallNotFieldable") | (x["PitchCall"] == "InPlay")])
         if len(x) != 0:
             dfx["Strike %"] = round((dfx["Strikes"] / len(x)) * 100, 1)
@@ -734,7 +740,8 @@ with g2:
         dfx["Avg EV"] = round(x[x["ExitSpeed"].notna()]["ExitSpeed"].mean(), 1)
     
         dfn = pd.DataFrame([dfx])
-        dff = dfn[["PitchType", "Strike %", "Zone %", "Swing %", "Contact %", "CS %", "Whiff %", "CSW %", "Avg EV"]]
+        dff = dfn[["PitchType", "Pitch %", "Strike %", "Zone %", "Swing %", "Contact %", "CS %", "Whiff %", "CSW %", "Avg EV"]]
+        dff = dff.sort_values("Pitch %", ascending=False)
     
         types2.append(dff)
         
