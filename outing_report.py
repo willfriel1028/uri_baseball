@@ -346,6 +346,9 @@ with c3:
                 st.session_state.data = st.session_state.data.drop(index=selected_indices).reset_index(drop=True)
                 st.rerun()
 
+# Give users option to toggle whether the bottom 2 graphs show or not
+show = st.toggle("Show more plots", value=True)
+
 # Align page so our 2 charts will be centered on the screen
 co1, co2, co3, co4, co5 = st.columns([1,3,1,3,1])
 
@@ -399,31 +402,33 @@ with co2:
         ]
     )
 
-    # Show plot with key "pitch_plot"
-    event2 = st.plotly_chart(fig2, on_select="rerun", key="pitch_plot")
+    # Only display plot if "show" is selected
+    if show:
+        # Show plot with key "pitch_plot"
+        event2 = st.plotly_chart(fig2, on_select="rerun", key="pitch_plot")
 
-    # When pitch(es) are selected
-    if event2 and event2.selection and event2.selection.points:
-
-        # Give users the option between reassigning pitch types or deleting selected pitches
-        
-        selected_indices = [int(pt["customdata"]) for pt in event2.selection.points]
-
-        st.markdown(f"**{len(selected_indices)} pitches selected**")
-
-        # Present pitch type options for reclassification
-        new_type = st.selectbox("Reclassify all selected as:", pitch_types)
-
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("Apply Change"):
-                for idx in selected_indices:
-                    st.session_state.data.at[idx, "TaggedPitchType"] = new_type
-                st.rerun()
-        with col2:
-            if st.button("Delete Selected"):
-                st.session_state.data = st.session_state.data.drop(index=selected_indices).reset_index(drop=True)
-                st.rerun()
+        # When pitch(es) are selected
+        if event2 and event2.selection and event2.selection.points:
+    
+            # Give users the option between reassigning pitch types or deleting selected pitches
+            
+            selected_indices = [int(pt["customdata"]) for pt in event2.selection.points]
+    
+            st.markdown(f"**{len(selected_indices)} pitches selected**")
+    
+            # Present pitch type options for reclassification
+            new_type = st.selectbox("Reclassify all selected as:", pitch_types)
+    
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("Apply Change"):
+                    for idx in selected_indices:
+                        st.session_state.data.at[idx, "TaggedPitchType"] = new_type
+                    st.rerun()
+            with col2:
+                if st.button("Delete Selected"):
+                    st.session_state.data = st.session_state.data.drop(index=selected_indices).reset_index(drop=True)
+                    st.rerun()
 
 ###### STUFF PLUS PLOT
 
@@ -521,13 +526,19 @@ df = pd.concat(rows, ignore_index=True)
 # Rename some columns to how they were before (for simplicity)
 df.rename(columns={'inducedVertBreak': 'InducedVertBreak', 'horzBreak': 'HorzBreak', 'extension': 'Extension', 'relX': 'RelSide', 'relZ': 'RelHeight', 'releaseVelocity': 'RelSpeed', 'spinRate': 'SpinRate', 'PitchType': 'TaggedPitchType'}, inplace=True)
 
+# Only display selectbox if "show" is selected
+if show:
 # Use middle column for pitch type selection
-with co3:
+    with co3:
+    
+        # Give user option to select pitch type to display on Stuff+ plot
+        pitches = list(df["TaggedPitchType"].unique())
+        pitch = st.selectbox("Choose a Pitch", options=pitches)
+        df_p = df[df["TaggedPitchType"] == pitch]
 
-    # Give user option to select pitch type to display on Stuff+ plot
-    pitches = list(df["TaggedPitchType"].unique())
-    pitch = st.selectbox("Choose a Pitch", options=pitches)
-    df_p = df[df["TaggedPitchType"] == pitch]
+# Set df_p manually if not showing (prevents errors going forward)
+else:
+    df_p = df[df["TaggedPitchType"] == "FA"]
 
 with co4:
 
@@ -583,8 +594,10 @@ with co4:
         ]
     )
 
-    # Display plot with key "stuff_plot"
-    event5 = st.plotly_chart(fig5, on_select="rerun", key="stuff_plot")
+    # Only display plot if "show" is selected
+    if show:
+        # Display plot with key "stuff_plot"
+        event5 = st.plotly_chart(fig5, on_select="rerun", key="stuff_plot")
 
     # NOTE: This plot does not provide users an option to delete pitches or reassign pitch types
 
