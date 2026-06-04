@@ -581,7 +581,7 @@ with co4:
         # Adjust size to fit embedded app on website - make sure it appears square
         width=550,
         height=500,
-        autosize=False
+        autosize=False,
 
         # Set axes
         xaxis=dict(range=[-30, 30], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
