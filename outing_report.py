@@ -614,7 +614,7 @@ with co4:
 # We will first create our Stuff table, which displays a variety of metrics for each pitch type that pitcher throws
 
 # Control the size of the table
-g1,g2 = st.columns([3,1])
+g1,g2 = st.columns([1,1])
 
 with g1:
 
@@ -669,9 +669,7 @@ with g1:
 
 ############## PERFORMANCE TABLE
 
-j1,j2 = st.columns([3,1])
-
-with j1:
+with g2:
     st.text("PERFORMANCE TABLE")
     pitches = list(df["TaggedPitchType"].unique())
     pitches.append("Total")   
@@ -746,70 +744,68 @@ with j1:
 
 ############## STATISTICS TABLE
 
-h1,h2 = st.columns([3,1])
-with h1:
-    st.text("COMPETITION TABLE")
+st.text("COMPETITION TABLE")
 
-    stats = {}
-    
-    stats["IP"] = round((len(df[df["KorBB"] == "Strikeout"]) + sum(df["OutsOnPlay"])) / 3, 2)
-    stats["Hits"] = len(df[(df["PlayResult"] == "Single") | (df["PlayResult"] == "Double") | (df["PlayResult"] == "Triple") | (df["PlayResult"] == "HomeRun")])
-    stats["Runs"] = sum(df["RunsScored"])
-    stats["K"] = len(df[df["KorBB"] == "Strikeout"])
-    stats["BB"] = len(df[df["KorBB"] == "Walk"])
-    stats["HBP"] = len(df[df["PitchCall"] == "HitByPitch"])
-    
-    oneK = df[(df["Strikes"] == 1) & (df["Balls"] <= 1)]
-    if len(oneK) > 0:
-        stats["0-2 or 1-2"] = len(oneK[(oneK["PitchCall"] == "StrikeCalled") | (oneK["PitchCall"] == "StrikeSwinging") | (oneK["PitchCall"] == "FoulBallNotFieldable")])
-    else: 
-        stats["0-2 or 1-2"] = 0
-    
-    stats["4PitchesOrLess"] = 0
-    for d in df["Date"].dropna().unique():
-        dfd = df[df["Date"] == d]
-        if not dfd.empty:
-            for i in range(1, dfd["Inning"].max() + 1):
-                dfi = dfd[dfd["Inning"] == i]
-                if not dfi.empty:
-                    for p in range(1, dfi["PAofInning"].max() + 1):
-                        dfip = dfi[dfi["PAofInning"] == p]
-                        if (len(dfip) <= 4) & (len(dfip) >= 1):
-                            stats["4PitchesOrLess"] = stats["4PitchesOrLess"] + 1
-    
-    stats["IPw/0s"] = 0
-    for d in df["Date"].dropna().unique():
-        dfd = df[df["Date"] == d]
-        if not dfd.empty:
-            for i in range(1, dfd["Inning"].max() + 1):
-                dfi = dfd[dfd["Inning"] == i]
-                if not dfi.empty:
-                    if sum(dfi["RunsScored"]) == 0:
-                        stats["IPw/0s"] = stats["IPw/0s"] + 1
-    
-    leadoff = df[df["PAofInning"] == 1]
-    stats["LeadoffOut"] = len(leadoff[(leadoff["KorBB"] == "Strikeout") | (leadoff["OutsOnPlay"] > 0)])
-    
-    stats["123"] = 0
-    for d in df["Date"].dropna().unique():
-        dfd = df[df["Date"] == d]
-        if not dfd.empty:
-            for i in range(1, dfd["Inning"].max() + 1):
-                dfi = dfd[dfd["Inning"] == i]
-                if not dfi.empty:
-                    if sum(dfi["PAofInning"].dropna().unique()) == 6:
-                            stats["123"] = stats["123"] + 1
-    
-    stats["LeadoffOn"] = len(leadoff[(leadoff["KorBB"] == "Walk") | (leadoff["PlayResult"] == "Single") | (leadoff["PlayResult"] == "Double") | (leadoff["PlayResult"] == "Triple") | (leadoff["PlayResult"] == "HomeRun") | (leadoff["PitchCall"] == "HitByPitch")])
-    
-    stats["CompetitionScore"] = stats["0-2 or 1-2"] + stats["K"] + stats["4PitchesOrLess"] + stats["IPw/0s"] + stats["LeadoffOut"] + (2 * stats["123"]) - stats["BB"] - stats["Runs"] - stats["Hits"] - stats["HBP"] - stats["LeadoffOn"]
-    
-    if stats["IP"] != 0:
-        stats["CompScore/IP"] = round(stats["CompetitionScore"] / stats["IP"], 2)
-    elif stats["IP"] == 0:
-        stats["CompScore/IP"] = np.nan
-    
-    st.dataframe(pd.DataFrame([stats]), hide_index=True, use_container_width=True, height=(len(pd.DataFrame([stats])) + 1) * 35 + 3)
+stats = {}
+
+stats["IP"] = round((len(df[df["KorBB"] == "Strikeout"]) + sum(df["OutsOnPlay"])) / 3, 2)
+stats["Hits"] = len(df[(df["PlayResult"] == "Single") | (df["PlayResult"] == "Double") | (df["PlayResult"] == "Triple") | (df["PlayResult"] == "HomeRun")])
+stats["Runs"] = sum(df["RunsScored"])
+stats["K"] = len(df[df["KorBB"] == "Strikeout"])
+stats["BB"] = len(df[df["KorBB"] == "Walk"])
+stats["HBP"] = len(df[df["PitchCall"] == "HitByPitch"])
+
+oneK = df[(df["Strikes"] == 1) & (df["Balls"] <= 1)]
+if len(oneK) > 0:
+    stats["0-2 or 1-2"] = len(oneK[(oneK["PitchCall"] == "StrikeCalled") | (oneK["PitchCall"] == "StrikeSwinging") | (oneK["PitchCall"] == "FoulBallNotFieldable")])
+else: 
+    stats["0-2 or 1-2"] = 0
+
+stats["4PitchesOrLess"] = 0
+for d in df["Date"].dropna().unique():
+    dfd = df[df["Date"] == d]
+    if not dfd.empty:
+        for i in range(1, dfd["Inning"].max() + 1):
+            dfi = dfd[dfd["Inning"] == i]
+            if not dfi.empty:
+                for p in range(1, dfi["PAofInning"].max() + 1):
+                    dfip = dfi[dfi["PAofInning"] == p]
+                    if (len(dfip) <= 4) & (len(dfip) >= 1):
+                        stats["4PitchesOrLess"] = stats["4PitchesOrLess"] + 1
+
+stats["IPw/0s"] = 0
+for d in df["Date"].dropna().unique():
+    dfd = df[df["Date"] == d]
+    if not dfd.empty:
+        for i in range(1, dfd["Inning"].max() + 1):
+            dfi = dfd[dfd["Inning"] == i]
+            if not dfi.empty:
+                if sum(dfi["RunsScored"]) == 0:
+                    stats["IPw/0s"] = stats["IPw/0s"] + 1
+
+leadoff = df[df["PAofInning"] == 1]
+stats["LeadoffOut"] = len(leadoff[(leadoff["KorBB"] == "Strikeout") | (leadoff["OutsOnPlay"] > 0)])
+
+stats["123"] = 0
+for d in df["Date"].dropna().unique():
+    dfd = df[df["Date"] == d]
+    if not dfd.empty:
+        for i in range(1, dfd["Inning"].max() + 1):
+            dfi = dfd[dfd["Inning"] == i]
+            if not dfi.empty:
+                if sum(dfi["PAofInning"].dropna().unique()) == 6:
+                        stats["123"] = stats["123"] + 1
+
+stats["LeadoffOn"] = len(leadoff[(leadoff["KorBB"] == "Walk") | (leadoff["PlayResult"] == "Single") | (leadoff["PlayResult"] == "Double") | (leadoff["PlayResult"] == "Triple") | (leadoff["PlayResult"] == "HomeRun") | (leadoff["PitchCall"] == "HitByPitch")])
+
+stats["CompetitionScore"] = stats["0-2 or 1-2"] + stats["K"] + stats["4PitchesOrLess"] + stats["IPw/0s"] + stats["LeadoffOut"] + (2 * stats["123"]) - stats["BB"] - stats["Runs"] - stats["Hits"] - stats["HBP"] - stats["LeadoffOn"]
+
+if stats["IP"] != 0:
+    stats["CompScore/IP"] = round(stats["CompetitionScore"] / stats["IP"], 2)
+elif stats["IP"] == 0:
+    stats["CompScore/IP"] = np.nan
+
+st.dataframe(pd.DataFrame([stats]), hide_index=True, use_container_width=False, height=(len(pd.DataFrame([stats])) + 1) * 35 + 3)
     
     
 
