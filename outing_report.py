@@ -387,7 +387,8 @@ with co2:
 
         # Customize height to fit embedded app on website - make sure it appears square
         width=550,
-        height=550,
+        height=500,
+        autosize=False,
 
         # Set axes, use autorange=True to make it so the plot automatically adjusts to the min/max values on each axis
         xaxis=dict(range=[0, 3000], autorange=True,),
@@ -408,7 +409,7 @@ with co2:
     # Only display plot if "show" is selected
     if show:
         # Show plot with key "pitch_plot"
-        event2 = st.plotly_chart(fig2, on_select="rerun", key="pitch_plot")
+        event2 = st.plotly_chart(fig2, on_select="rerun", key="pitch_plot", use_container_width=False)
 
         # When pitch(es) are selected
         if event2 and event2.selection and event2.selection.points:
@@ -579,7 +580,8 @@ with co4:
 
         # Adjust size to fit embedded app on website - make sure it appears square
         width=550,
-        height=550,
+        height=500,
+        autosize=False
 
         # Set axes
         xaxis=dict(range=[-30, 30], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
@@ -600,7 +602,7 @@ with co4:
     # Only display plot if "show" is selected
     if show:
         # Display plot with key "stuff_plot"
-        event5 = st.plotly_chart(fig5, on_select="rerun", key="stuff_plot")
+        event5 = st.plotly_chart(fig5, on_select="rerun", key="stuff_plot", use_container_width=False)
 
     # NOTE: This plot does not provide users an option to delete pitches or reassign pitch types
 
