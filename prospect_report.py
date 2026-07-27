@@ -6,15 +6,24 @@ from scipy import stats
 import numpy as np
 
 # Makes it so app takes up full page
-#st.set_page_config(layout="wide")
+st.set_page_config(layout="wide")
 
-# Allows scrolling on app
 st.markdown(
     """
     <style>
     html, body, [class*="stAppViewContainer"], [class*="main"], [class*="block-container"] {
         height: 100%;
         overflow: auto !important;
+    }
+    .block-container {
+        max-width: 850px;
+        margin: 0 auto;
+        padding-top: 3rem;
+        padding-bottom: 3rem;
+        padding-left: 3rem;
+        padding-right: 3rem;
+        background-color: white;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
     }
     </style>
     """,
