@@ -7,3 +7,5 @@ lightgbm
 scikit-learn
 matplotlib
 seaborn
+reportlab
+kaleido
