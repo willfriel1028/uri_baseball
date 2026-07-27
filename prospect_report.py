@@ -4,10 +4,19 @@ import plotly.graph_objects as go
 import pandas as pd
 from scipy import stats
 import numpy as np
+import io
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Image, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors as rl_colors
+from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.styles import ParagraphStyle
 
 # Makes it so app takes up full page
 st.set_page_config(layout="wide")
 
+# Allows scrolling on app
 st.markdown(
     """
     <style>
@@ -15,20 +24,66 @@ st.markdown(
         height: 100%;
         overflow: auto !important;
     }
-    .block-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding-top: 3rem;
-        padding-bottom: 3rem;
-        padding-left: 3rem;
-        padding-right: 3rem;
-        background-color: white;
-        box-shadow: 0 0 20px rgba(0,0,0,0.1);
-    }
     </style>
     """,
     unsafe_allow_html=True
 )
+
+def make_pdf_table(df):
+    data = [list(df.columns)] + df.values.tolist()
+    t = Table(data, repeatRows=1)
+    t.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), rl_colors.HexColor("#333333")),
+        ('TEXTCOLOR', (0, 0), (-1, 0), rl_colors.white),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+        ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
+        ('FONTSIZE', (0, 0), (-1, -1), 7),
+        ('GRID', (0, 0), (-1, -1), 0.5, rl_colors.grey),
+        ('ALIGN', (0, 1), (-1, -1), 'CENTER'),
+    ]))
+    return t
+
+def generate_pdf(pitcher_display, table_df, perf_df, fig_rel, fig_break, fig_loc):
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer, pagesize=letter,
+        leftMargin=0.5 * inch, rightMargin=0.5 * inch,
+        topMargin=0.5 * inch, bottomMargin=0.5 * inch
+    )
+    styles = getSampleStyleSheet()
+    centered_heading = ParagraphStyle(
+        'CenteredHeading',
+        parent=styles['Heading2'],
+        alignment=TA_CENTER
+    )
+    elements = [Paragraph(f"Prospect Report for {pitcher_display}", styles["Title"]), Spacer(1, 20)]
+
+    # Usable width on a Letter page with 0.5in margins is 7.5in - split 3 ways with small gaps
+    img_width, img_height = 2.45 * inch, 2.45 * inch
+    chart_images = []
+    for fig in [fig_rel, fig_break, fig_loc]:
+        img_bytes = fig.to_image(format="png", scale=3)
+        chart_images.append(Image(io.BytesIO(img_bytes), width=img_width, height=img_height))
+    
+    chart_row = Table([chart_images], colWidths=[img_width + 0.05 * inch] * 3)
+    chart_row.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+    elements.append(chart_row)
+    elements.append(Spacer(1, 20))
+
+    elements.append(Paragraph("Stuff Table", centered_heading))
+    elements.append(make_pdf_table(table_df))
+    elements.append(Spacer(1, 20))
+    
+    elements.append(Paragraph("Performance Table", centered_heading))
+    elements.append(make_pdf_table(perf_df))
+
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer
 
 # File upload - allows for multiple csv files to be uploaded at once
 files = st.file_uploader("Import Trackman file", type="csv", accept_multiple_files=True)
@@ -74,14 +129,17 @@ df = data[data["Pitcher"] == pitcher]
 df["RelSidei"] = df["RelSide"] * 12
 df["RelHeighti"] = df["RelHeight"] * 12
 
-# Creates three equal-sized columns for our top 3 charts
-c1, c2, c3 = st.columns([1,1,1])
-
 # Maps colors to pitch types, so they are consistent across all plots
 colors = {"Fastball": "red", "Slider": "blue", "Curveball": "green", "ChangeUp": "orange",
           "Sinker": "brown", "Cutter": "gray", "Splitter": "purple"}
 
 pitch_types = ["Fastball", "Slider", "ChangeUp", "Curveball", "Cutter", "Sinker", "Splitter"]
+
+# Creates three equal-sized columns for our top 3 charts
+c1, c2, c3 = st.columns([1,1,1])
+
+# Determine pitcher handedness to decide which corner the inset legend goes in
+pitcher_hand = df["PitcherThrows"].iloc[0] if "PitcherThrows" in df.columns and len(df) > 0 else "Right"
 
 ############## INTERACTIVE PITCH CHARTS
 
@@ -90,9 +148,9 @@ pitch_types = ["Fastball", "Slider", "ChangeUp", "Curveball", "Cutter", "Sinker"
 with c1:
 
     # Initialize plot
-    fig3 = go.Figure()
+    fig1 = go.Figure()
     for pitch, group in df.groupby("TaggedPitchType"):
-        fig3.add_trace(go.Scatter(
+        fig1.add_trace(go.Scatter(
 
             # Release Side (inches) on x-axis, Release Height (inches) on y-axis
             x=group["RelSidei"],
@@ -103,28 +161,27 @@ with c1:
             name=pitch,
 
             # Everything here is identical to previous plot
-            marker=dict(size=8, color=colors.get(pitch, "black"), line=dict(color="white", width=0.5)),
+            marker=dict(size=12, color=colors.get(pitch, "black"), line=dict(color="white", width=0.5)),
             customdata=group.index.tolist(),
         ))
 
-    fig3.update_layout(
+    fig1.update_layout(
 
-        # Add titles
-        title="Release Point Chart",
-        xaxis_title="Release Side (in)",
-        yaxis_title="Release Height (in)",
+        # Add titles (centered)
+        title=dict(text="<b>Release Point Chart</b>", x=0.5, xanchor="center"),
 
-        # Set size to fit embedded app on website - make sure it appears square
-        width=550,
-        height=500,
+        # Portrait aspect - taller than wide, per request
+        width=480,
+        height=640,
         autosize=False,
+        showlegend=False,
 
-        # Set axes range
-        xaxis=dict(range=[-48, 48], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
-        yaxis=dict(range=[0, 96], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
+        # Set axes range - standoff pushes the axis title away from the tick numbers
+        xaxis=dict(title=dict(text="Release Side (in)", standoff=15), range=[-48, 48], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
+        yaxis=dict(title=dict(text="Release Height (in)", standoff=15), range=[0, 96], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
         plot_bgcolor="white",
         paper_bgcolor="white",
-        margin=dict(l=20, r=20, t=40, b=20),
+        margin=dict(l=70, r=20, t=40, b=60),
         shapes=[
             dict(
                 type="rect",
@@ -136,11 +193,11 @@ with c1:
     )
 
     # Show plot with key "rel_plot"
-    event3 = st.plotly_chart(fig3, on_select="rerun", key="rel_plot", use_container_width=False)
+    event1 = st.plotly_chart(fig1, on_select="rerun", key="rel_plot", use_container_width=False)
 
     # When pitches are selected
-    if event3 and event3.selection and event3.selection.points:
-        selected_indices = [int(pt["customdata"]) for pt in event3.selection.points]
+    if event1 and event1.selection and event1.selection.points:
+        selected_indices = [int(pt["customdata"]) for pt in event1.selection.points]
 
         # Users can only delete pitches on this plot, not reassign their pitch type
         col1, col2 = st.columns(2)
@@ -155,13 +212,13 @@ with c1:
 with c2:
 
     # Initializes empty plot
-    fig1 = go.Figure()
+    fig2 = go.Figure()
 
     # Iterates over each pitch, grouped by pitch type, and performs the following
     for pitch, group in df.groupby("TaggedPitchType"):
 
         # for each pitch type group, adds a new scatter plot layer to the figure with:
-        fig1.add_trace(go.Scatter(
+        fig2.add_trace(go.Scatter(
 
             # Horizontal Break on x-axis, Induced Vertical Break on y-axis
             x=group["HorzBreak"],
@@ -172,30 +229,39 @@ with c2:
             name=pitch,
 
             # Styles each dot to size 8, and the color is based on correlating pitch type color that we mapped earlier
-            marker=dict(size=8, color=colors.get(pitch, "black")),
+            marker=dict(size=12, color=colors.get(pitch, "black")),
 
             # Attaches dataframe row indeces to each point, will be helpful for click interactions later on
             customdata=group.index.tolist(),
         ))
 
-    fig1.update_layout(
+    fig2.update_layout(
 
-        # Add titles
-        title="Pitch Break Chart",
-        xaxis_title="Horizontal Break (in)",
-        yaxis_title="Induced Vertical Break (in)",
+        # Add titles (centered)
+        title=dict(text="<b>Pitch Break Chart</b>", x=0.5, xanchor="center"),
 
-        # Set size to fit embedded app on website - make sure it appears square
-        width=550,
-        height=500,
+        # Square aspect
+        width=580,
+        height=580,
         autosize=False,
 
-        # Set axes
-        xaxis=dict(range=[-25, 25], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
-        yaxis=dict(range=[-25, 25], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
+        # Inset legend inside the plot: top-left for RHP, top-right for LHP
+        legend=dict(
+            x=0.02 if pitcher_hand == "Right" else 0.98,
+            y=0.98,
+            xanchor="left" if pitcher_hand == "Right" else "right",
+            yanchor="top",
+            bgcolor="rgba(255,255,255,0.7)",
+            bordercolor="black",
+            borderwidth=1
+        ),
+
+        # Set axes - standoff pushes the axis title away from the tick numbers
+        xaxis=dict(title=dict(text="Horizontal Break (in)", standoff=15), range=[-25, 25], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
+        yaxis=dict(title=dict(text="Induced Vertical Break (in)", standoff=15), range=[-25, 25], showgrid=False, zeroline=True, zerolinecolor="black", zerolinewidth=2),
         plot_bgcolor="white",
         paper_bgcolor="white",
-        margin=dict(l=20, r=20, t=40, b=20),
+        margin=dict(l=70, r=20, t=40, b=60),
         shapes=[
             dict(
                 type="rect",
@@ -208,12 +274,12 @@ with c2:
 
     # Show the plot on app
     # Every plot has to have its own unique key, this one is "plot1"
-    event1 = st.plotly_chart(fig1, on_select="rerun", key="plot1", use_container_width=False)
+    event2 = st.plotly_chart(fig2, on_select="rerun", key="plot1", use_container_width=False)
 
     # For when point(s) on the plot are selected
-    if event1 and event1.selection and event1.selection.points:
+    if event2 and event2.selection and event2.selection.points:
         # The selected point(s)
-        selected_indices = [int(pt["customdata"]) for pt in event1.selection.points]
+        selected_indices = [int(pt["customdata"]) for pt in event2.selection.points]
 
         # Display number of pitches selected
         st.markdown(f"**{len(selected_indices)} pitches selected**")
@@ -242,9 +308,9 @@ with c2:
 with c3:
 
     # Initialize plot
-    fig4 = go.Figure()
+    fig3 = go.Figure()
     for pitch, group in df.groupby("TaggedPitchType"):
-        fig4.add_trace(go.Scatter(
+        fig3.add_trace(go.Scatter(
 
             # Plate Location Side (ft) on x-axis, Plate Location Height (feet) on y-axis
             x=group["PlateLocSide"],
@@ -255,28 +321,27 @@ with c3:
             name=pitch,
 
             # Everything here is identical to previous plots
-            marker=dict(size=8, color=colors.get(pitch, "black"), line=dict(color="white", width=0.5)),
+            marker=dict(size=12, color=colors.get(pitch, "black"), line=dict(color="white", width=0.5)),
             customdata=group.index.tolist(),
         ))
 
-    fig4.update_layout(
+    fig3.update_layout(
 
-        # Add titles
-        title="Pitch Location Chart",
-        xaxis_title="Plate Location Side (ft)",
-        yaxis_title="Plate Location Height (ft)",
+        # Add titles (centered)
+        title=dict(text="<b>Pitch Location Chart</b>", x=0.5, xanchor="center"),
 
-        # Set size to fit embedded app on website - make sure it appears square
-        width=550,
-        height=500,
+        # Square aspect
+        width=580,
+        height=580,
         autosize=False,
+        showlegend=False,
 
-        # Set axes
-        xaxis=dict(range=[-3, 3], showgrid=False, zeroline=False, zerolinecolor="black", zerolinewidth=2),
-        yaxis=dict(range=[-1, 6], showgrid=False, zeroline=False, zerolinecolor="black", zerolinewidth=2),
+        # Set axes - standoff pushes the axis title away from the tick numbers
+        xaxis=dict(title=dict(text="Plate Location Side (ft)", standoff=15), range=[-3, 3], showgrid=False, zeroline=False, zerolinecolor="black", zerolinewidth=2),
+        yaxis=dict(title=dict(text="Plate Location Height (ft)", standoff=15), range=[-1, 6], showgrid=False, zeroline=False, zerolinecolor="black", zerolinewidth=2),
         plot_bgcolor="white",
         paper_bgcolor="white",
-        margin=dict(l=20, r=20, t=40, b=20),
+        margin=dict(l=70, r=20, t=40, b=60),
         shapes=[
             dict(
                 type="rect",
@@ -288,24 +353,24 @@ with c3:
     )
 
     # Add lines to visualize strike zone on the plot
-    fig4.add_shape(type="line", x0=-0.75, x1=-0.75, y0=1.65, y1=3.65, line=dict(color="black", width=2))
-    fig4.add_shape(type="line", x0=0.75, x1=0.75, y0=1.65, y1=3.65, line=dict(color="black", width=2))
-    fig4.add_shape(type="line", x0=-0.25, x1=-0.25, y0=1.65, y1=3.65, line=dict(color="black", width=1))
-    fig4.add_shape(type="line", x0=0.25, x1=0.25, y0=1.65, y1=3.65, line=dict(color="black", width=1))
-    fig4.add_shape(type="line", x0=-0.75, x1=0.75, y0=3.65, y1=3.65, line=dict(color="black", width=2))
-    fig4.add_shape(type="line", x0=-0.75, x1=0.75, y0=1.65, y1=1.65, line=dict(color="black", width=2))
-    fig4.add_shape(type="line", x0=-0.75, x1=0.75, y0=2.32, y1=2.32, line=dict(color="black", width=1))
-    fig4.add_shape(type="line", x0=-0.75, x1=0.75, y0=2.99, y1=2.99, line=dict(color="black", width=1))
+    fig3.add_shape(type="line", x0=-0.75, x1=-0.75, y0=1.65, y1=3.65, line=dict(color="black", width=2))
+    fig3.add_shape(type="line", x0=0.75, x1=0.75, y0=1.65, y1=3.65, line=dict(color="black", width=2))
+    fig3.add_shape(type="line", x0=-0.25, x1=-0.25, y0=1.65, y1=3.65, line=dict(color="black", width=1))
+    fig3.add_shape(type="line", x0=0.25, x1=0.25, y0=1.65, y1=3.65, line=dict(color="black", width=1))
+    fig3.add_shape(type="line", x0=-0.75, x1=0.75, y0=3.65, y1=3.65, line=dict(color="black", width=2))
+    fig3.add_shape(type="line", x0=-0.75, x1=0.75, y0=1.65, y1=1.65, line=dict(color="black", width=2))
+    fig3.add_shape(type="line", x0=-0.75, x1=0.75, y0=2.32, y1=2.32, line=dict(color="black", width=1))
+    fig3.add_shape(type="line", x0=-0.75, x1=0.75, y0=2.99, y1=2.99, line=dict(color="black", width=1))
 
     # Display plot with key "loc_plot"
-    event4 = st.plotly_chart(fig4, on_select="rerun", key="loc_plot", use_container_width=False)
+    event3 = st.plotly_chart(fig3, on_select="rerun", key="loc_plot", use_container_width=False)
 
     # When pitch(es) are selected
-    if event4 and event4.selection and event4.selection.points:
+    if event3 and event3.selection and event3.selection.points:
 
         # Give users the option between reassigning pitch types or deleting selected pitches
         
-        selected_indices = [int(pt["customdata"]) for pt in event4.selection.points]
+        selected_indices = [int(pt["customdata"]) for pt in event3.selection.points]
 
         st.markdown(f"**{len(selected_indices)} pitches selected**")
 
@@ -356,7 +421,7 @@ with g1:
     table["Avg Velo"] = round(table["Avg_Velo"], 1)
     table["IVB"] = round(table["IVB"], 1)
     table["HB"] = round(table["HB"], 1)
-    table["Spin Rate"] = round(table["SpinRate"])
+    table["Spin Rate"] = round(table["SpinRate"]).astype("int64")
     table["VAA"] = round(table["VAA"], 1)
     table["HAA"] = round(table["HAA"], 1)
     table["Vert Rel"] = round(table["Vert_Rel"], 1)
@@ -427,7 +492,7 @@ with g3:
                 dfx["Whiff %"] = round(((len(xs[xs["PitchCall"] == "StrikeSwinging"]) / len(xs)) * 100), 1)
             else:
                 dfx["Whiff %"] = np.nan
-            dfx["CSW %"] = dfx["CS %"] + dfx["Whiff %"]
+            dfx["CSW %"] = round(dfx["CS %"] + dfx["Whiff %"], 1)
         else:
             dfx["Strike %"] = np.nan
             dfx["Zone %"] = np.nan
@@ -447,6 +512,15 @@ with g3:
     perfs = perfs.sort_values("Pitch %", ascending=False)
     
     st.dataframe(perfs, hide_index=True, use_container_width=True, height=(len(perfs) + 1) * 35 + 3)
+
+pdf_buffer = generate_pdf(pitcher_display, table, perfs, fig1, fig2, fig3)
+
+st.download_button(
+    label="Download PDF Report",
+    data=pdf_buffer,
+    file_name=f"{pitcher_display.replace(' ', '_')}_report.pdf",
+    mime="application/pdf"
+)
 
 
 st.markdown(f"<div style='margin-top: {600}px;'></div>", unsafe_allow_html=True)
