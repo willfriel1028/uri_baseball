@@ -440,3 +440,4 @@ with g3:
     st.dataframe(perfs, hide_index=True, use_container_width=True, height=(len(perfs) + 1) * 35 + 3)
 
 
+st.markdown(f"<div style='margin-top: {600}px;'></div>", unsafe_allow_html=True)
