@@ -16,7 +16,7 @@ st.markdown(
         overflow: auto !important;
     }
     .block-container {
-        max-width: 850px;
+        max-width: 1200px;
         margin: 0 auto;
         padding-top: 3rem;
         padding-bottom: 3rem;
