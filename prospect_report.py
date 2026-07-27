@@ -6,7 +6,7 @@ from scipy import stats
 import numpy as np
 
 # Makes it so app takes up full page
-st.set_page_config(layout="wide")
+#st.set_page_config(layout="wide")
 
 # Allows scrolling on app
 st.markdown(
