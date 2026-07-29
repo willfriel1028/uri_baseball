@@ -12,6 +12,8 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors as rl_colors
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
 
 # Makes it so app takes up full page
 st.set_page_config(layout="wide")
@@ -28,6 +30,26 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+def add_letterhead(canvas, doc):
+    canvas.saveState()
+    
+    # Small text, top-left corner
+    canvas.setFont("Helvetica", 8)
+    canvas.setFillColor(rl_colors.HexColor("#555555"))
+    canvas.drawString(0.5 * inch, 10.5 * inch, "University of Rhode Island Baseball")
+    
+    # Logo image, top-right corner - vertically centered on the text's line
+    logo_width, logo_height = 0.8 * inch, 0.8 * inch
+    canvas.drawImage(
+        "images/urilogo.png",
+        letter[0] - 0.5 * inch - logo_width,  # right-aligned against the margin
+        10.14 * inch,  # centers the logo on the text baseline (accounts for 8pt cap height)
+        width=logo_width, height=logo_height,
+        preserveAspectRatio=True, mask='auto'
+    )
+    
+    canvas.restoreState()
 
 def make_pdf_table(df):
     data = [list(df.columns)] + df.values.tolist()
@@ -49,7 +71,7 @@ def generate_pdf(pitcher_display, table_df, perf_df, fig_rel, fig_break, fig_loc
     doc = SimpleDocTemplate(
         buffer, pagesize=letter,
         leftMargin=0.5 * inch, rightMargin=0.5 * inch,
-        topMargin=0.5 * inch, bottomMargin=0.5 * inch
+        topMargin=0.9 * inch, bottomMargin=0.5 * inch
     )
     styles = getSampleStyleSheet()
     centered_heading = ParagraphStyle(
@@ -57,7 +79,7 @@ def generate_pdf(pitcher_display, table_df, perf_df, fig_rel, fig_break, fig_loc
         parent=styles['Heading2'],
         alignment=TA_CENTER
     )
-    elements = [Paragraph(f"Prospect Report for {pitcher_display}", styles["Title"]), Spacer(1, 20)]
+    elements = [Spacer(1, 15), Paragraph(f"Prospect Report for {pitcher_display}", styles["Title"]), Spacer(1, 20)]
 
     # Usable width on a Letter page with 0.5in margins is 7.5in - split 3 ways with small gaps
     img_width, img_height = 2.45 * inch, 2.45 * inch
@@ -81,7 +103,7 @@ def generate_pdf(pitcher_display, table_df, perf_df, fig_rel, fig_break, fig_loc
     elements.append(Paragraph("Performance Table", centered_heading))
     elements.append(make_pdf_table(perf_df))
 
-    doc.build(elements)
+    doc.build(elements, onFirstPage=add_letterhead, onLaterPages=add_letterhead)
     buffer.seek(0)
     return buffer
 
@@ -171,7 +193,7 @@ with c1:
         title=dict(text="<b>Release Point Chart</b>", x=0.5, xanchor="center"),
 
         # Portrait aspect - taller than wide, per request
-        width=480,
+        width=580,
         height=640,
         autosize=False,
         showlegend=False,
