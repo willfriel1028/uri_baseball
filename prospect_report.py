@@ -523,10 +523,9 @@ with g3:
             dfx["CS %"] = np.nan
             dfx["Whiff %"] = np.nan
             dfx["CSW %"] = np.nan
-        dfx["Avg EV"] = round(x[x["ExitSpeed"].notna()]["ExitSpeed"].mean(), 1)
     
         dfn = pd.DataFrame([dfx])
-        dff = dfn[["Pitch Type", "Pitch %", "Strike %", "Zone %", "Swing %", "Contact %", "CS %", "Whiff %", "CSW %", "Avg EV"]]
+        dff = dfn[["Pitch Type", "Pitch %", "Strike %", "Zone %", "Swing %", "Contact %", "CS %", "Whiff %", "CSW %"]]
     
         types2.append(dff)
         
