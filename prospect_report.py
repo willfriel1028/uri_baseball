@@ -44,7 +44,7 @@ def add_letterhead(canvas, doc):
     canvas.drawImage(
         "images/urilogo.png",
         letter[0] - 0.2 * inch - logo_width,  # right-aligned against the margin
-        10.14 * inch,  # centers the logo on the text baseline (accounts for 8pt cap height)
+        9.5 * inch,  # centers the logo on the text baseline (accounts for 8pt cap height)
         width=logo_width, height=logo_height,
         preserveAspectRatio=True, mask='auto'
     )
