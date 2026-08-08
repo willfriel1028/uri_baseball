@@ -550,7 +550,7 @@ stats["Hits"] = int(len(df[(df["PlayResult"] == "Single") | (df["PlayResult"] ==
 stats["Runs"] = int(sum(df["RunsScored"]))
 stats["K"] = int(len(df[df["KorBB"] == "Strikeout"]))
 stats["BB"] = int(len(df[df["KorBB"] == "Walk"]))
-stats["HR"] = int(len(df[df["PlayReslt"] == "HomeRun"]))
+stats["HR"] = int(len(df[df["PlayResult"] == "HomeRun"]))
 stats["HBP"] = int(len(df[df["PitchCall"] == "HitByPitch"]))
 
 stats_df = pd.DataFrame([stats])
