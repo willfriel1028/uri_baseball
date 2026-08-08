@@ -85,6 +85,10 @@ def generate_pdf(stats_df, pitcher_display, table_df, perf_df, fig_rel, fig_brea
     elements.append(make_pdf_table(stats_df))
     elements.append(Spacer(1, 20))
 
+    elements.append(Paragraph("Performance", centered_heading))
+    elements.append(make_pdf_table(perf_df))
+    elements.append(Spacer(1, 20))
+
     # Usable width on a Letter page with 0.5in margins is 7.5in - split 3 ways with small gaps
     img_width, img_height = 2.45 * inch, 2.45 * inch
     chart_images = []
@@ -103,9 +107,6 @@ def generate_pdf(stats_df, pitcher_display, table_df, perf_df, fig_rel, fig_brea
     elements.append(Paragraph("Stuff Table", centered_heading))
     elements.append(make_pdf_table(table_df))
     elements.append(Spacer(1, 20))
-    
-    elements.append(Paragraph("Performance Table", centered_heading))
-    elements.append(make_pdf_table(perf_df))
 
     doc.build(elements, onFirstPage=add_letterhead, onLaterPages=add_letterhead)
     buffer.seek(0)
