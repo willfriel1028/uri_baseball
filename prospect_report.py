@@ -52,7 +52,7 @@ def add_letterhead(canvas, doc):
     canvas.restoreState()
 
 def make_pdf_table(df):
-    data = [list(df.columns)] + df.values.tolist()
+    data = [list(df.columns)] + [list(row) for row in df.itertuples(index=False)]
     t = Table(data, repeatRows=1)
     t.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), rl_colors.HexColor("#333333")),
