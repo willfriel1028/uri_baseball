@@ -66,7 +66,7 @@ def make_pdf_table(df):
     ]))
     return t
 
-def generate_pdf(pitcher_display, table_df, perf_df, fig_rel, fig_break, fig_loc):
+def generate_pdf(stats_df, pitcher_display, table_df, perf_df, fig_rel, fig_break, fig_loc):
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(
         buffer, pagesize=letter,
@@ -80,6 +80,10 @@ def generate_pdf(pitcher_display, table_df, perf_df, fig_rel, fig_break, fig_loc
         alignment=TA_CENTER
     )
     elements = [Spacer(1, 15), Paragraph(f"Prospect Report for {pitcher_display}", styles["Title"]), Spacer(1, 20)]
+
+    elements.append(Paragraph("Stats", centered_heading))
+    elements.append(make_pdf_table(stats_df))
+    elements.append(Spacer(1, 20))
 
     # Usable width on a Letter page with 0.5in margins is 7.5in - split 3 ways with small gaps
     img_width, img_height = 2.45 * inch, 2.45 * inch
@@ -534,7 +538,25 @@ with g3:
     
     st.dataframe(perfs, hide_index=True, use_container_width=True, height=(len(perfs) + 1) * 35 + 3)
 
-pdf_buffer = generate_pdf(pitcher_display, table, perfs, fig1, fig2, fig3)
+
+############## STATS TABLE
+
+st.text("STATS")
+
+stats = {}
+
+stats["IP"] = round((len(df[df["KorBB"] == "Strikeout"]) + sum(df["OutsOnPlay"])) / 3, 2)
+stats["Hits"] = len(df[(df["PlayResult"] == "Single") | (df["PlayResult"] == "Double") | (df["PlayResult"] == "Triple") | (df["PlayResult"] == "HomeRun")])
+stats["Runs"] = sum(df["RunsScored"])
+stats["K"] = len(df[df["KorBB"] == "Strikeout"])
+stats["BB"] = len(df[df["KorBB"] == "Walk"])
+stats["HBP"] = len(df[df["PitchCall"] == "HitByPitch"])
+
+stats_df = pd.DataFrame([stats])
+
+st.dataframe(stats_df, hide_index=True, use_container_width=False, height=(len(stats_df) + 1) * 35 + 3)
+
+pdf_buffer = generate_pdf(stats_df, pitcher_display, table, perfs, fig1, fig2, fig3)
 
 st.download_button(
     label="Download PDF Report",
