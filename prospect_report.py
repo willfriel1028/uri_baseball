@@ -43,7 +43,7 @@ def add_letterhead(canvas, doc):
     # Small text, top-left corner
     canvas.setFont("Helvetica-Bold", 11)
     canvas.setFillColor(URI_NAVY)
-    canvas.drawString(0.5 * inch, 10.5 * inch, "University of Rhode Island Baseball")
+    canvas.drawString(0.5 * inch, 10.15 * inch, "University of Rhode Island Baseball")
     
     # Logo image, top-right corner - vertically centered on the text's line
     logo_width, logo_height = 1 * inch, 1 * inch
