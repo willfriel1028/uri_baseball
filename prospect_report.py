@@ -63,7 +63,7 @@ def add_letterhead(canvas, doc):
     # Footer: generation date (left) and page number (right)
     canvas.setFont("Helvetica", 7)
     canvas.setFillColor(rl_colors.HexColor("#888888"))
-    canvas.drawString(0.5 * inch, 0.3 * inch, f"Generated {datetime.now().strftime('%B %d, %Y')}")
+    #canvas.drawString(0.5 * inch, 0.3 * inch, f"Generated {datetime.now().strftime('%B %d, %Y')}")
     canvas.drawRightString(letter[0] - 0.5 * inch, 0.3 * inch, f"Page {canvas.getPageNumber()}")
     
     canvas.restoreState()
