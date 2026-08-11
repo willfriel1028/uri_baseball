@@ -576,7 +576,7 @@ stats["HBP"] = int(len(df[df["PitchCall"] == "HitByPitch"]))
 
 stats_df = pd.DataFrame([stats])
 
-st.dataframe(stats_df, hide_index=True, use_container_width=False, height=(len(stats_df) + 1) * 35 + 3)
+stats_df = st.data_editor(stats_df, hide_index=True, use_container_width=False, height=(len(stats_df) + 1) * 35 + 3)
 
 pdf_buffer = generate_pdf(stats_df, pitcher_display, table, perfs, fig1, fig2, fig3)
 
