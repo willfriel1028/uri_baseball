@@ -14,6 +14,12 @@ from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
+from reportlab.platypus import HRFlowable
+from datetime import datetime
+
+# Brand colors - replace with URI's official hex values if you have their brand guide
+URI_NAVY = rl_colors.HexColor("#0C2340")
+URI_LIGHT_BLUE = rl_colors.HexColor("#63B1E5")
 
 # Makes it so app takes up full page
 st.set_page_config(layout="wide")
@@ -35,8 +41,8 @@ def add_letterhead(canvas, doc):
     canvas.saveState()
     
     # Small text, top-left corner
-    canvas.setFont("Helvetica", 8)
-    canvas.setFillColor(rl_colors.HexColor("#555555"))
+    canvas.setFont("Helvetica-Bold", 11)
+    canvas.setFillColor(URI_NAVY)
     canvas.drawString(0.5 * inch, 10.5 * inch, "University of Rhode Island Baseball")
     
     # Logo image, top-right corner - vertically centered on the text's line
@@ -48,6 +54,17 @@ def add_letterhead(canvas, doc):
         width=logo_width, height=logo_height,
         preserveAspectRatio=True, mask='auto'
     )
+
+    # Accent line separating the letterhead band from the body content
+    canvas.setStrokeColor(URI_NAVY)
+    canvas.setLineWidth(1.5)
+    canvas.line(0.5 * inch, 10.05 * inch, letter[0] - 0.5 * inch, 10.05 * inch)
+
+    # Footer: generation date (left) and page number (right)
+    canvas.setFont("Helvetica", 7)
+    canvas.setFillColor(rl_colors.HexColor("#888888"))
+    canvas.drawString(0.5 * inch, 0.3 * inch, f"Generated {datetime.now().strftime('%B %d, %Y')}")
+    canvas.drawRightString(letter[0] - 0.5 * inch, 0.3 * inch, f"Page {canvas.getPageNumber()}")
     
     canvas.restoreState()
 
@@ -55,7 +72,7 @@ def make_pdf_table(df):
     data = [list(df.columns)] + [list(row) for row in df.itertuples(index=False)]
     t = Table(data, repeatRows=1)
     t.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), rl_colors.HexColor("#333333")),
+        ('BACKGROUND', (0, 0), (-1, 0), URI_NAVY),
         ('TEXTCOLOR', (0, 0), (-1, 0), rl_colors.white),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
@@ -79,7 +96,11 @@ def generate_pdf(stats_df, pitcher_display, table_df, perf_df, fig_rel, fig_brea
         parent=styles['Heading2'],
         alignment=TA_CENTER
     )
-    elements = [Spacer(1, 15), Paragraph(f"Prospect Report for {pitcher_display}", styles["Title"]), Spacer(1, 10)]
+    elements = [
+        Spacer(1, 15),
+        Paragraph(f"Prospect Report for {pitcher_display}", styles["Title"]),
+        HRFlowable(width="40%", thickness=2, color=URI_LIGHT_BLUE, spaceBefore=2, spaceAfter=14, hAlign='CENTER'),
+    ]
 
     elements.append(Paragraph("Stats", centered_heading))
     elements.append(make_pdf_table(stats_df))
