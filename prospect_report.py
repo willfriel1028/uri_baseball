@@ -497,8 +497,8 @@ with g3:
             x = df
             
         zone = (
-                ((x["PlateLocHeight"] >= 1.65) & (x["PlateLocHeight"] <= 3.65)) & 
-                ((x["PlateLocSide"] >= -0.75) & (x["PlateLocSide"] <= 0.75))
+                ((x["PlateLocHeight"] > 1.41) & (x["PlateLocHeight"] < 3.89)) & 
+                ((x["PlateLocSide"] > -0.99) & (x["PlateLocSide"] < 0.99))
             )
         swing = (
                 (x["PitchCall"] == "InPlay") |
