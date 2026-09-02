@@ -4,7 +4,7 @@ import duckdb
 
 st.set_page_config(layout="wide")
 
-teams = duckdb.sql("SELECT DISTINCT team FROM '2026/stuff_table_26.parquet' ORDER BY team").df()["team"].tolist()
+teams = duckdb.sql("SELECT DISTINCT team FROM 'pitch_modeling/stuff/2026/stuff_table_26.parquet' ORDER BY team").df()["team"].tolist()
 teams.remove("URI")
 teams.insert(0, "URI")
 teams.insert(0, "TOTAL")
@@ -35,11 +35,11 @@ def get_table(team, count, bhand):
     where_clause = build_where_clause(team, count)
 
     if bhand == "R":
-        parquet = "2026/stuff_table_vsR_26.parquet"
+        parquet = "pitch_modeling/stuff/2026/stuff_table_vsR_26.parquet"
     elif bhand == "L":
-        parquet = "2026/stuff_table_vsL_26.parquet"
+        parquet = "pitch_modeling/stuff/2026/stuff_table_vsL_26.parquet"
     else:
-        parquet = "2026/stuff_table_26.parquet"
+        parquet = "pitch_modeling/stuff/2026/stuff_table_26.parquet"
     
     query = f"""
         SELECT
@@ -67,7 +67,7 @@ def get_table(team, count, bhand):
 
 table = get_table(team, count, bhand)
 
-print(duckdb.sql("SELECT COUNT(*) FROM '2026/stuff_table_26.parquet' WHERE Total >= 25").df())
+print(duckdb.sql("SELECT COUNT(*) FROM 'pitch_modeling/stuff/2026/stuff_table_26.parquet' WHERE Total >= 25").df())
 
 if team != "TOTAL":
     st.dataframe(table, hide_index=True, use_container_width=True, height=(len(table) + 1) * 35 + 3)
