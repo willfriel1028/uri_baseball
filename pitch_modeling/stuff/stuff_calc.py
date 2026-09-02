@@ -88,7 +88,7 @@ pop_std = result["pop_std"].iloc[0]
 def load_model(pitch):
     key = pitch
     if key not in MODELS_CACHE:
-        with open(f'2026/models/stuff_{pitch}.pkl', 'rb') as f:
+        with open(f'pitch_modeling/stuff/2026/models/stuff_{pitch}.pkl', 'rb') as f:
             MODELS_CACHE[key] = pickle.load(f)
     return MODELS_CACHE[key]
 
