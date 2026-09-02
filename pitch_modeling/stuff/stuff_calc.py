@@ -79,7 +79,7 @@ target = ["rv"]
 dx = pd.DataFrame([x], columns=non_fb_features)
 
 result = duckdb.sql(
-    "SELECT AVG(xRV) AS pop_mean, STDDEV_POP(xRV) AS pop_std FROM '2026/stuff_26.parquet' WHERE pitchType = ?",
+    "SELECT AVG(xRV) AS pop_mean, STDDEV_POP(xRV) AS pop_std FROM 'pitch_modeling/stuff/2026/stuff_26.parquet' WHERE pitchType = ?",
     params=[pitch]
 ).df()
 pop_mean = result["pop_mean"].iloc[0]
