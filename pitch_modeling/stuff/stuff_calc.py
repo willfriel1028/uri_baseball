@@ -102,9 +102,9 @@ def pred_sp(test, features, target, bucket, pop_mean, pop_std):
     stuff_plus = 100 + (-10 * (xrv - pop_mean) / pop_std)
     return pd.Series(stuff_plus, index=test.index)
 
-def generate_movement_grid(row, bucket, steps=60):
-    ivb_range = np.linspace(-25, 25, steps)
-    hb_range = np.linspace(-25, 25, steps)
+def generate_movement_grid(row, bucket, steps=50):
+    ivb_range = np.linspace(-30, 30, steps)
+    hb_range = np.linspace(-30, 30, steps)
     hb_grid, ivb_grid = np.meshgrid(hb_range, ivb_range)
 
     if bucket in ["FB", "FC"]:
