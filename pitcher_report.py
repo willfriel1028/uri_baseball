@@ -75,7 +75,7 @@ data = data.rename(columns={
 })
 
 # Initializes and populates pitchBucket column, to identify Stuff+ which model will be used for each pitch
-data["pitchBucket"] = None
+data["pitchBucket"] = np.nan
 data.loc[data["TaggedPitchType"].isin(["FA", "SI"]), "pitchBucket"] = "FB"
 data.loc[data["TaggedPitchType"].isin(["FC"]), "pitchBucket"] = "FC"
 data.loc[data["TaggedPitchType"].isin(["CH", "FS"]), "pitchBucket"] = "OFF"
@@ -87,7 +87,7 @@ data.loc[data["PitcherThrows"] == "Right", "phand"] = 1
 data.loc[data["PitcherThrows"] == "Left", "phand"] = 0
 
 # Initialize and populate bhand column (1 if Right, 0 if Left)
-data["bhand"] = None
+data["bhand"] = np.nan
 data.loc[data["BatterSide"] == "Right", "bhand"] = 1
 data.loc[data["BatterSide"] == "Left", "bhand"] = 0
 
