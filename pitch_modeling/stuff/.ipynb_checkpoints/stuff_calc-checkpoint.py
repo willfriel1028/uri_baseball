@@ -79,7 +79,7 @@ target = ["rv"]
 dx = pd.DataFrame([x], columns=non_fb_features)
 
 result = duckdb.sql(
-    "SELECT AVG(xRV) AS pop_mean, STDDEV_POP(xRV) AS pop_std FROM '2026/stuff_26.parquet' WHERE pitchType = ?",
+    "SELECT AVG(xRV) AS pop_mean, STDDEV_POP(xRV) AS pop_std FROM 'pitch_modeling/stuff/2026/stuff_26.parquet' WHERE pitchType = ?",
     params=[pitch]
 ).df()
 pop_mean = result["pop_mean"].iloc[0]
@@ -88,7 +88,7 @@ pop_std = result["pop_std"].iloc[0]
 def load_model(pitch):
     key = pitch
     if key not in MODELS_CACHE:
-        with open(f'2026/models/stuff_{pitch}.pkl', 'rb') as f:
+        with open(f'pitch_modeling/stuff/2026/models/stuff_{pitch}.pkl', 'rb') as f:
             MODELS_CACHE[key] = pickle.load(f)
     return MODELS_CACHE[key]
 

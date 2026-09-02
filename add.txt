@@ -1,3 +1,9 @@
-git add batting_stats.py batting_SD.py batting_graphs.py pitching_stats.py pitching_comp.py pitching_graphs.py
+git add batting_stats.py batting_SD.py batting_graphs.py pitching_stats.py pitching_comp.py pitching_graphs.py outing_report.py data requirements.txt sp_calc.py sp_leaderboard.py
+git commit -m "Updated repo"
+git push origin main
+
+git pull origin main --no-rebase
+
+git add requirements.txt
 git commit -m "Updated repo"
 git push origin main
