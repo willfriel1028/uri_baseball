@@ -222,8 +222,8 @@ def generate_stuff_grid(df_grid, grid_shape, bucket, pop_mean, pop_std):
 # Bounds are set to where it would make sense to see each pitch type land on an IVB/HB plot
 # For example, there is no need to display Stuff+ values on a RHP FA on the bottom left quadrant - the training data probably has not seen any like this and it will produce weird results
 MOVEMENT_BOUNDS = {
-    ("FA", "R"): {"hb": (0, 25),  "ivb": (0, 30)},
-    ("FA", "L"): {"hb": (-25, 0),  "ivb": (0, 30)},
+    ("FA", "R"): {"hb": (-5, 25),  "ivb": (0, 30)},
+    ("FA", "L"): {"hb": (-25, 5),  "ivb": (0, 30)},
     ("SI", "R"): {"hb": (0, 30),   "ivb": (-10, 20)},
     ("SI", "L"): {"hb": (-30, 0), "ivb": (-10, 20)},
     ("FC", "R"): {"hb": (-15, 5),  "ivb": (-5, 15)},
