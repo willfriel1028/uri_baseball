@@ -69,16 +69,16 @@ def uri_pitchers_report(df):
     final_df = final_df.drop(drop, axis=1)
 
     # merge sb and ir into final_df
-    if "Regular Season" in selections or selections == []:
-        final_df = final_df.merge(stolen_bases_against, on='Pitcher', how='left')
-        final_df = final_df.merge(inherited_runners, on='Pitcher', how='left')
-        final_df["Total-"] = final_df["Total-"] + final_df["SB"]
-        final_df["Total-"] = final_df["Total-"] - final_df["IRDNS"]
-        final_df["CompetitionScore"] = final_df["CompetitionScore"] - final_df["SB"]
-        final_df["CompetitionScore"] = final_df["CompetitionScore"] + final_df["IRDNS"]
-        final_df["CompetitionScore/IP"] = round(final_df["CompetitionScore"] / final_df["IP"], 2)
-        final_df["CompetitionScore/IP"] = final_df["CompetitionScore/IP"].replace([np.inf, -np.inf], np.nan)
-        final_df["CompetitionScore/IP"] = final_df["CompetitionScore/IP"].fillna(0)
+    #if "Regular Season" in selections or selections == []:
+        #final_df = final_df.merge(stolen_bases_against, on='Pitcher', how='left')
+        #final_df = final_df.merge(inherited_runners, on='Pitcher', how='left')
+        #final_df["Total-"] = final_df["Total-"] + final_df["SB"]
+        #final_df["Total-"] = final_df["Total-"] - final_df["IRDNS"]
+        #final_df["CompetitionScore"] = final_df["CompetitionScore"] - final_df["SB"]
+        #final_df["CompetitionScore"] = final_df["CompetitionScore"] + final_df["IRDNS"]
+        #final_df["CompetitionScore/IP"] = round(final_df["CompetitionScore"] / final_df["IP"], 2)
+        #final_df["CompetitionScore/IP"] = final_df["CompetitionScore/IP"].replace([np.inf, -np.inf], np.nan)
+        #final_df["CompetitionScore/IP"] = final_df["CompetitionScore/IP"].fillna(0)
         
     mean_score = final_df["CompetitionScore/IP"].mean()
     std_score = final_df["CompetitionScore/IP"].std()
