@@ -5,51 +5,51 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import glob
 
-stolen_bases_against = pd.read_csv("data/Baserunning.csv")
-inherited_runners = pd.read_csv("data/inherited_runners.csv")
-fall = pd.read_csv("data/Fall25Scrim(updated).csv")
-spring = pd.read_csv("data/Spring26Scrim(updated).csv")
-season = pd.concat([pd.read_csv(f) for f in glob.glob("data/26Season/*.csv")], ignore_index=True)
+#stolen_bases_against = pd.read_csv("data/Baserunning.csv")
+#inherited_runners = pd.read_csv("data/inherited_runners.csv")
+#fall = pd.read_csv("data/Fall25Scrim(updated).csv")
+#spring = pd.read_csv("data/Spring26Scrim(updated).csv")
+#season = pd.concat([pd.read_csv(f) for f in glob.glob("data/26Season/*.csv")], ignore_index=True)
 
-selections = st.pills("Include Data From:", 
-                     ["Regular Season", "Fall Scrimmages"],
-                     selection_mode="multi")
+#selections = st.pills("Include Data From:", 
+                     #["Regular Season", "Fall Scrimmages"],
+                     #selection_mode="multi")
 
-if selections == ["Fall Scrimmages"]:
-    df = fall
-elif selections == ["Regular Season"]:
-    df = season
-elif selections == ["Regular Season", "Fall Scrimmages"]:
-    df = pd.concat([fall, season])
-else:
-    df = season
+#if selections == ["Fall Scrimmages"]:
+    #df = fall
+#elif selections == ["Regular Season"]:
+    #df = season
+#elif selections == ["Regular Season", "Fall Scrimmages"]:
+    #df = pd.concat([fall, season])
+#else:
+    #df = season
 
-df["Pitcher"] = df["Pitcher"].replace("Grotyohann, Connor ", "Grotyohann, Connor")
+df = pd.concat([pd.read_csv(f) for f in glob.glob("data/Fall26/*.csv")], ignore_index=True)
 
 # clean stolen bases
-keep_cols = ['playerFullName', 'SB']
-stolen_bases_against = stolen_bases_against[keep_cols]
-stolen_bases_against['playerFullName'] = stolen_bases_against['playerFullName'].apply(lambda x: f"{x.split()[1]}, {x.split()[0]}")
+#keep_cols = ['playerFullName', 'SB']
+#stolen_bases_against = stolen_bases_against[keep_cols]
+#stolen_bases_against['playerFullName'] = stolen_bases_against['playerFullName'].apply(lambda x: f"{x.split()[1]}, {x.split()[0]}")
 
-stolen_bases_against = stolen_bases_against.rename(columns={'playerFullName': 'Pitcher'})
+#stolen_bases_against = stolen_bases_against.rename(columns={'playerFullName': 'Pitcher'})
 
-stolen_bases_against['Pitcher'] = stolen_bases_against['Pitcher'].replace('Sabbath, Joseph', 'Sabbath, Joe')
+#stolen_bases_against['Pitcher'] = stolen_bases_against['Pitcher'].replace('Sabbath, Joseph', 'Sabbath, Joe')
 
-stolen_bases_against['Pitcher'] = stolen_bases_against['Pitcher'].replace('Fletcher, Nate', 'Fletcher, Nathan')
+#stolen_bases_against['Pitcher'] = stolen_bases_against['Pitcher'].replace('Fletcher, Nate', 'Fletcher, Nathan')
 
 # clean inherited runners
-keep_cols_IR = ['playerFullName', 'IS', 'IR']
-inherited_runners = inherited_runners[keep_cols_IR]
-inherited_runners['playerFullName'] = inherited_runners['playerFullName'].apply(lambda x: f"{x.split()[1]}, {x.split()[0]}")
+#keep_cols_IR = ['playerFullName', 'IS', 'IR']
+#inherited_runners = inherited_runners[keep_cols_IR]
+#inherited_runners['playerFullName'] = inherited_runners['playerFullName'].apply(lambda x: f"{x.split()[1]}, {x.split()[0]}")
 
-inherited_runners = inherited_runners.rename(columns={'playerFullName': 'Pitcher'})
+#inherited_runners = inherited_runners.rename(columns={'playerFullName': 'Pitcher'})
 
-inherited_runners['Pitcher'] = inherited_runners['Pitcher'].replace('Sabbath, Joseph', 'Sabbath, Joe')
+#inherited_runners['Pitcher'] = inherited_runners['Pitcher'].replace('Sabbath, Joseph', 'Sabbath, Joe')
 
-inherited_runners['Pitcher'] = inherited_runners['Pitcher'].replace('Fletcher, Nate', 'Fletcher, Nathan')
+#inherited_runners['Pitcher'] = inherited_runners['Pitcher'].replace('Fletcher, Nate', 'Fletcher, Nathan')
 
 # IRDNS = inherited runners did not score 
-inherited_runners['IRDNS'] = inherited_runners['IR'] - inherited_runners['IS']
+#inherited_runners['IRDNS'] = inherited_runners['IR'] - inherited_runners['IS']
 
 def uri_pitchers_report(df):
     

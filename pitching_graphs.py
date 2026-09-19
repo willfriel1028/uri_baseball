@@ -150,22 +150,24 @@ def get_outcome(df):
     df["Outcome"] = df["PitchCall"].map(outcome_map).fillna("Other")
     return df
 
-fall = pd.read_csv("data/Fall25Scrim(updated).csv")
-spring = pd.read_csv("data/Spring26Scrim(updated).csv")
-season = pd.concat([pd.read_csv(f) for f in glob.glob("data/26Season/*.csv")], ignore_index=True)
+#fall = pd.read_csv("data/Fall25Scrim(updated).csv")
+#spring = pd.read_csv("data/Spring26Scrim(updated).csv")
+#season = pd.concat([pd.read_csv(f) for f in glob.glob("data/26Season/*.csv")], ignore_index=True)
 
-selections = st.pills("Include Data From:", 
-                     ["Regular Season", "Fall Scrimmages"],
-                     selection_mode="multi")
+#selections = st.pills("Include Data From:", 
+                     #["Regular Season", "Fall Scrimmages"],
+                     #selection_mode="multi")
 
-if selections == ["Fall Scrimmages"]:
-    df = fall
-elif selections == ["Regular Season"]:
-    df = season
-elif selections == ["Regular Season", "Fall Scrimmages"]:
-    df = pd.concat([fall, season])
-else:
-    df = season
+#if selections == ["Fall Scrimmages"]:
+    #df = fall
+#elif selections == ["Regular Season"]:
+    #df = season
+#elif selections == ["Regular Season", "Fall Scrimmages"]:
+    #df = pd.concat([fall, season])
+#else:
+    #df = season
+
+df = pd.concat([pd.read_csv(f) for f in glob.glob("data/Fall26/*.csv")], ignore_index=True)
 
 data = df.reset_index(drop=True)
     
