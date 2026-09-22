@@ -5,3 +5,6 @@ stuff+/stuff_plus.ipynb
 old_stuff/
 old_stuff/
 programs/
+.ipynb_checkpoints/
+.virtual_documents/
+anaconda_projects/
