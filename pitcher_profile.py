@@ -175,7 +175,7 @@ for ptype in ["FA", "SI", "FC", "CH", "FS", "SL", "ST", "CU"]:
 
 # In this section we create and plot both of the interactive pitch charts that appear on the page
 
-x1,x2,x3 = st.columns([1,2,1])
+x1,x2,x3,x4 = st.columns([4,6,2,4])
 
 # Since we are using x2, we use a column that will print to 2/4, or half of the page
 with x2:
@@ -185,8 +185,23 @@ with x2:
     # Create selectbox where user can select pitcher they want to analyze
     pitcher = st.selectbox("Choose a Pitcher", options=names)
 
-# Once pitcher is selected, we filter the dataframe so ONLY that pitcher's pitches are included
-df = data[data["Pitcher"] == pitcher].copy()
+    # Once pitcher is selected, we filter the dataframe so ONLY that pitcher's pitches are included
+    df = data[data["Pitcher"] == pitcher].copy()
+
+with x3:
+    # Build list for date selections
+    alld = ["TOTAL"]
+    dates = list(df["Date"].dropna().unique())
+    choices = alld + dates
+
+    # User date selection
+    date = st.selectbox("Date", options=choices)
+
+    # Create subset of df based on date selected
+    if date == "TOTAL":
+        df = df
+    else:
+        df = df[df["Date"] == date]
 
 # Creating column that converts Release Side/Height to inches, to be used for Release Point Chart
 df["relXi"] = df["relX"] * 12
@@ -236,7 +251,7 @@ with c1:
 
         # Set size to fit embedded app on website - make sure it appears square
         width=800,
-        height=750,
+        height=650,
         autosize=False,
 
         # Set axes range
@@ -368,7 +383,7 @@ with c3:
 
         # Set size to fit embedded app on website - make sure it appears square
         width=800,
-        height=750,
+        height=650,
         autosize=False,
 
         # Set axes
