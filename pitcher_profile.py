@@ -179,8 +179,8 @@ x1,x2,x3,x4 = st.columns([4,6,2,4])
 
 # Since we are using x2, we use a column that will print to 2/4, or half of the page
 with x2:
-    # Create a list of all unique pitchers in dataframe for users to select from
-    names = list(data["Pitcher"].unique())
+    # Create a list of all unique pitchers in dataframe for users to select from, sorted alphabetically
+    names = sorted(list(data["Pitcher"].unique()))
 
     # Create selectbox where user can select pitcher they want to analyze
     pitcher = st.selectbox("Choose a Pitcher", options=names)
@@ -191,7 +191,9 @@ with x2:
 with x3:
     # Build list for date selections
     alld = ["TOTAL"]
-    dates = list(df["Date"].dropna().unique())
+
+    # Options for dates, sorted chronologically
+    dates = sorted(df["Date"].dropna().unique(), key=pd.to_datetime)
     choices = alld + dates
 
     # User date selection
