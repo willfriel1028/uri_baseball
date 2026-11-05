@@ -147,7 +147,7 @@ for pitch, group in data.groupby("pitchBucket"):
     preds = model.predict(group[features])
     data.loc[group.index, "xRV"] = preds
 
-# Calculating Stuff+ for each pitch in df - uses population mean and standard deviations of xRV in test sample (see `pitch_modeling/stuff/2026/stuff_2026.ipynb`)
+# Calculating Stuff+ for each pitch in df - uses population mean and standard deviations of xRV in test sample (see `pitch_modeling/stuff/2026/stuff_26.ipynb`)
 for ptype in ["FA", "SI", "FC", "CH", "FS", "SL", "ST", "CU"]:
     
     # Use SQL to get mean and std of xRV values per pitch type
@@ -213,6 +213,11 @@ df["relZi"] = df["relZ"] * 12
 colors = {"FA": "red", "SL": "blue", "CU": "green", "CH": "orange",
           "SI": "saddlebrown", "FC": "gray", "FS": "purple", "ST": "lightblue"}
 
+# Extract selected point indices from Pitch Break Plot session selection state if available
+selected_break_indices = []
+if "plot1" in st.session_state and st.session_state["plot1"].get("selection", {}).get("points"):
+    selected_break_indices = [int(pt["customdata"]) for pt in st.session_state["plot1"]["selection"]["points"]]
+
 # Creates columns for plots
 c0, c1, c2, c3, c4 = st.columns([1,4,1,4,1])
 
@@ -228,7 +233,13 @@ with c1:
 
     # Initialize plot
     fig1 = go.Figure()
+    has_selection = len(selected_break_indices) > 0
+
     for pitch, group in df.groupby("TaggedPitchType"):
+        # Dim base markers if pitches are selected from the Pitch Break Plot
+        base_opacity = 0.2 if has_selection else 1.0
+        base_line_width = 0.2 if has_selection else 0.5
+
         fig1.add_trace(go.Scatter(
 
             # Release Side (inches) on x-axis, Release Height (inches) on y-axis
@@ -240,9 +251,35 @@ with c1:
             name=pitch,
 
             # Everything here is identical to previous plot
-            marker=dict(size=12, color=colors.get(pitch, "black"), line=dict(color="white", width=0.5)),
+            marker=dict(size=12, color=colors.get(pitch, "black"), opacity=base_opacity, line=dict(color="white", width=base_line_width)),
             customdata=group.index.tolist(),
+
+            # Turn hover off for base pitches if a selection exists on Pitch Break Plot
+            hoverinfo="none" if has_selection else "all",
         ))
+
+    # Highlight pitches selected from Horizontal Break / Pitch Break Graph on top layer
+    if has_selection:
+        highlight_df = df[df.index.isin(selected_break_indices)]
+        if not highlight_df.empty:
+            for pitch, group in highlight_df.groupby("TaggedPitchType"):
+                fig1.add_trace(go.Scatter(
+                    x=group["relXi"],
+                    y=group["relZi"],
+                    mode="markers",
+                    name=f"{pitch} (Selected)",
+                    showlegend=False,
+                    marker=dict(
+                        size=18,
+                        color=colors.get(pitch, "black"),
+                        opacity=1.0,
+                        line=dict(color="yellow", width=2.5)
+                    ),
+                    customdata=group.index.tolist(),
+
+                    # Enable hover ONLY for the selected pitch(es)
+                    hoverinfo="all",
+                ))
 
     fig1.update_layout(
 
@@ -272,19 +309,8 @@ with c1:
         ]
     )
 
-    # Show plot with key "rel_plot"
-    event1 = st.plotly_chart(fig1, on_select="rerun", key="rel_plot", use_container_width=False)
-
-    # When pitches are selected
-    if event1 and event1.selection and event1.selection.points:
-        selected_indices = [int(pt["customdata"]) for pt in event1.selection.points]
-
-        # Users can only delete pitches on this plot, not reassign their pitch type
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("Delete Selected", key="delete_relplot"):
-                st.session_state.data = st.session_state.data.drop(index=selected_indices).reset_index(drop=True)
-                st.rerun()
+    # Show plot with key "rel_plot" (Selection functionality disabled)
+    event1 = st.plotly_chart(fig1, key="rel_plot", use_container_width=False)
 
 
 
@@ -494,7 +520,7 @@ with g2:
             ).df()
             pop_mean = result["pop_mean"].iloc[0]
             pop_std = result["pop_std"].iloc[0]
-    
+        
             row["Stuff+"] = round(100 + (-10 * (row["xrv"] - pop_mean) / pop_std))
             rows.append(row)
 
@@ -505,6 +531,3 @@ with g2:
     table = table.sort_values("Pitch %", ascending=False)
         
     st.dataframe(table, hide_index=True, use_container_width=True, height=(len(table) + 1) * 35 + 3)
-
-
-    
