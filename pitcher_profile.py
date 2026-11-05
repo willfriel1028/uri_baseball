@@ -147,7 +147,7 @@ for pitch, group in data.groupby("pitchBucket"):
     preds = model.predict(group[features])
     data.loc[group.index, "xRV"] = preds
 
-# Calculating Stuff+ for each pitch in df - uses population mean and standard deviations of xRV in test sample (see `pitch_modeling/stuff/2026/stuff_26.ipynb`)
+# Calculating Stuff+ for each pitch in df - uses population mean and standard deviations of xRV in test sample (see `pitch_modeling/stuff/2026/stuff_2026.ipynb`)
 for ptype in ["FA", "SI", "FC", "CH", "FS", "SL", "ST", "CU"]:
     
     # Use SQL to get mean and std of xRV values per pitch type
@@ -253,9 +253,6 @@ with c1:
             # Everything here is identical to previous plot
             marker=dict(size=12, color=colors.get(pitch, "black"), opacity=base_opacity, line=dict(color="white", width=base_line_width)),
             customdata=group.index.tolist(),
-
-            # Turn hover off for base pitches if a selection exists on Pitch Break Plot
-            hoverinfo="none" if has_selection else "all",
         ))
 
     # Highlight pitches selected from Horizontal Break / Pitch Break Graph on top layer
@@ -276,9 +273,6 @@ with c1:
                         line=dict(color="yellow", width=2.5)
                     ),
                     customdata=group.index.tolist(),
-
-                    # Enable hover ONLY for the selected pitch(es)
-                    hoverinfo="all",
                 ))
 
     fig1.update_layout(
@@ -309,8 +303,19 @@ with c1:
         ]
     )
 
-    # Show plot with key "rel_plot" (Selection functionality disabled)
-    event1 = st.plotly_chart(fig1, key="rel_plot", use_container_width=False)
+    # Show plot with key "rel_plot"
+    event1 = st.plotly_chart(fig1, on_select="rerun", key="rel_plot", use_container_width=False)
+
+    # When pitches are selected
+    if event1 and event1.selection and event1.selection.points:
+        selected_indices = [int(pt["customdata"]) for pt in event1.selection.points]
+
+        # Users can only delete pitches on this plot, not reassign their pitch type
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Delete Selected", key="delete_relplot"):
+                st.session_state.data = st.session_state.data.drop(index=selected_indices).reset_index(drop=True)
+                st.rerun()
 
 
 
@@ -531,3 +536,4 @@ with g2:
     table = table.sort_values("Pitch %", ascending=False)
         
     st.dataframe(table, hide_index=True, use_container_width=True, height=(len(table) + 1) * 35 + 3)
+    
