@@ -116,7 +116,8 @@ def pitchers_stats_report(df):
     firstp = df[df["PitchofPA"] == 1]
     dfx["1pK"] = len(firstp[(firstp["PitchCall"] == "StrikeCalled") | (firstp["PitchCall"] == "StrikeSwinging") | (firstp["PitchCall"] == "FoulBallNotFieldable") | (firstp["PitchCall"] == "InPlay")])
     dfx["BF"] = len(firstp)
-    dfx["1pK%"] = round((dfx["1pK"] / dfx["BF"]) * 100, 1)
+    # Hotfix for uri_baseball#30
+    dfx["1pK%"] = round((dfx["1pK"] / dfx["BF"]) * 100, 1) if dfx["BF"] > 0 else 0.0
     oneone = df[(df["Balls"] == 1) & (df["Strikes"] == 1)]
     if len(oneone) > 0:
         dfx["1-1K%"] = round((len(oneone[(oneone["PitchCall"] == "StrikeCalled") | (oneone["PitchCall"] == "StrikeSwinging") | (oneone["PitchCall"] == "FoulBallNotFieldable") | (oneone["PitchCall"] == "InPlay")]) / len(oneone)) * 100, 1)
