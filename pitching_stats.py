@@ -85,15 +85,54 @@ def move_column(df, colname, position):
     cols.insert(position, cols.pop(cols.index(colname)))
     return df[cols]
 
-df_uri = df[df["PitcherTeam"] == "RHO_RAM"]
+df_uri = df[df["PitcherTeam"] == "RHO_RAM"].copy()
 
-dfp = uri_pitchers_report(df_uri)
-
-dfps = dfp.sort_values("Pitcher", ascending=True)
+# Parse dates so they can be filtered
+df_uri["GameDate"] = pd.to_datetime(df_uri["Date"], format="mixed", errors="coerce").dt.date
+min_date = df_uri["GameDate"].min()
+max_date = df_uri["GameDate"].max()
 
 col1, col2 = st.columns([1,1])
 with col1:
     st.header("Pitching Statistics")
+with col2:
+    st.markdown("**Filter by Date**")
+    use_range = st.session_state.get("use_range", False)
 
-st.dataframe(dfps, hide_index=True, height=800)
+    if not use_range:
+        # Plain one-date picker, so no empty second date is shown
+        single = st.date_input(
+            "Date",
+            value=max_date,
+            min_value=min_date,
+            max_value=max_date,
+        )
+        start_date = end_date = single
+    else:
+        date_sel = st.date_input(
+            "Date range",
+            value=(min_date, max_date),
+            min_value=min_date,
+            max_value=max_date,
+        )
+        if len(date_sel) == 2:
+            start_date, end_date = date_sel
+        elif len(date_sel) == 1:
+            # Only the start date picked so far
+            start_date = end_date = date_sel[0]
+        else:
+            start_date, end_date = min_date, max_date
+
+    st.checkbox("Filter by date range", key="use_range")
+
+df_filtered = df_uri[(df_uri["GameDate"] >= start_date) & (df_uri["GameDate"] <= end_date)]
+
+if df_filtered.empty:
+    st.warning("No pitching data in the selected date range.")
+else:
+    dfp = uri_pitchers_report(df_filtered.drop(columns="GameDate"))
+    dfps = dfp.sort_values("Pitcher", ascending=True)
+    # Size the table to fit its rows (about 35px per row, plus the header row)
+    table_height = (len(dfps) + 1) * 35 + 3
+    st.dataframe(dfps, hide_index=True, height=table_height)
 st.set_page_config(layout="wide")
